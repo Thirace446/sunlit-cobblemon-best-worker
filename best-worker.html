@@ -15,13 +15,21 @@
     ? fromUrl
     : (saved === "dark" || saved === "light" ? saved : (systemDark ? "dark" : "light"));
   document.documentElement.dataset.theme = theme;
+  let sizeFromUrl = null;
+  let sizeSaved = null;
+  try { sizeFromUrl = new URLSearchParams(location.search).get("size"); } catch (_) {}
+  try { sizeSaved = localStorage.getItem("ssc_bw.textSize"); } catch (_) {}
+  const textSize = ["sm", "md", "lg"].includes(sizeFromUrl)
+    ? sizeFromUrl
+    : (["sm", "md", "lg"].includes(sizeSaved) ? sizeSaved : "md");
+  document.documentElement.dataset.textSize = textSize;
 })();
 </script>
 <style>
   :root{
     color-scheme: light;
     --bg:#f6f7f9; --card:#ffffff; --surface:#ffffff; --surface-2:#f1f3f7; --header:#f8f9fb;
-    --line:#e2e5ec; --line-soft:#eceef3; --border-hover:#cbd1dc;
+    --line:#d4d9e3; --line-soft:#e0e4ec; --border-hover:#b8c0cf;
     --text:#111827; --text-2:#374151; --muted:#6b7280; --idx:#9ca3af;
     --accent:#2563eb; --accent-soft:#eff4ff; --accent-border:#bfdbfe; --accent-ink:#1d4ed8;
     --good:#0f766e; --good-soft:#f0fdfa; --good-border:#99f6e4; --good-ink:#115e59;
@@ -33,11 +41,14 @@
     --shadow-card:0 1px 2px rgba(15,23,42,.04);
     --shadow-seg:0 1px 2px rgba(15,23,42,.06);
     --mono:ui-monospace,"SFMono-Regular",Menlo,Monaco,Consolas,monospace;
+    --text-scale:1.1;
   }
+  html[data-text-size="sm"]{--text-scale:1}
+  html[data-text-size="lg"]{--text-scale:1.24}
   html[data-theme="dark"]{
     color-scheme: dark;
     --bg:#0b0e14; --card:#11161f; --surface:#151b26; --surface-2:#1c2432; --header:#141a24;
-    --line:#232b3a; --line-soft:#1c2331; --border-hover:#334056;
+    --line:#334056; --line-soft:#293244; --border-hover:#46546b;
     --text:#f3f4f6; --text-2:#d1d5db; --muted:#8b95a5; --idx:#647084;
     --accent:#3b82f6; --accent-soft:#172542; --accent-border:#26437e; --accent-ink:#93c5fd;
     --good:#2dd4bf; --good-soft:#0f292a; --good-border:#1d4d4f; --good-ink:#99f6e4;
@@ -58,17 +69,28 @@
   }
   .wrap{max-width:none;margin:0 auto}
   header{position:relative;padding-bottom:2px}
+  .title-line{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:0 0 4px}
+  .title-line h1{margin:0}
   header h1{margin:0 0 4px;font-size:20px;font-weight:650;letter-spacing:-.01em}
-  header p{margin:0;color:var(--muted);font-size:13px}
-  header .meta{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:6px;color:var(--muted);font-size:12px}
+  .site-version{
+    font-family:var(--mono);font-size:calc(11.5px * var(--text-scale));font-weight:600;
+    color:var(--muted);background:var(--surface-2);border:1px solid var(--line);
+    border-radius:4px;padding:1px 6px;line-height:1.4;white-space:nowrap;
+  }
+  header p{margin:0;color:var(--muted);font-size:calc(13px * var(--text-scale))}
+  header .meta{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:6px;color:var(--muted);font-size:calc(12px * var(--text-scale))}
   header .meta b{color:var(--text-2);font-weight:600}
   .header-controls{position:absolute;top:0;right:0;display:flex;align-items:center;gap:8px}
-  .lang-switch{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px}
-  .lang-switch select,.theme-toggle{font:inherit;font-size:12px;color:var(--text-2);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 8px;outline:none}
+  .lang-switch{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:calc(12px * var(--text-scale))}
+  .text-size{display:inline-flex;padding:2px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;gap:1px}
+  .text-size button{font:inherit;font-size:calc(11px * var(--text-scale));line-height:1;color:var(--muted);background:transparent;border:0;border-radius:4px;padding:3px 6px;cursor:pointer}
+  .text-size button:hover{color:var(--text)}
+  .text-size button.on{background:var(--card);color:var(--text);box-shadow:var(--shadow-seg);font-weight:600}
+  .lang-switch select,.theme-toggle{font:inherit;font-size:calc(12px * var(--text-scale));color:var(--text-2);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 8px;outline:none}
   .lang-switch select:focus,.theme-toggle:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
   .theme-toggle{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
   .theme-toggle:hover,.lang-switch select:hover{border-color:var(--border-hover);color:var(--text)}
-  .import-link{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:6px;padding:4px 8px;color:var(--text-2);background:var(--surface);font-size:12px;text-decoration:none}
+  .import-link{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:6px;padding:4px 8px;color:var(--text-2);background:var(--surface);font-size:calc(12px * var(--text-scale));text-decoration:none}
   .import-link:hover{border-color:var(--border-hover);color:var(--text)}
   .card{
     background:var(--card);border:1px solid var(--line);border-radius:8px;
@@ -79,7 +101,7 @@
     padding:3px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;
   }
   .tab{
-    font:inherit;font-size:13px;cursor:pointer;border:1px solid transparent;background:transparent;
+    font:inherit;font-size:calc(13px * var(--text-scale));cursor:pointer;border:1px solid transparent;background:transparent;
     color:var(--muted);border-radius:6px;padding:5px 13px;font-weight:500;
     transition:color .12s,background .12s,border-color .12s;
   }
@@ -89,54 +111,56 @@
   .row{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center}
   .row[hidden]{display:none}
   .row.subrow{padding-left:14px;border-left:2px solid var(--line);margin-left:2px}
-  .row > .lbl,.filters > .lbl{color:var(--muted);font-size:12px;font-weight:500;min-width:64px}
+  .row > .lbl,.filters > .lbl{color:var(--text-2);font-size:calc(13px * var(--text-scale));font-weight:600;min-width:64px}
   .sim-row{gap:8px 16px;padding-top:2px;border-top:1px solid var(--line-soft)}
+  .sim-hint{margin:0;line-height:1.5}
   .field{display:inline-flex;align-items:center;gap:6px}
-  .field .lbl{color:var(--muted);font-size:12px;font-weight:500;min-width:auto}
+  .field .lbl{color:var(--text-2);font-size:calc(13px * var(--text-scale));font-weight:600;min-width:auto}
   .sim-row > .field:first-child{gap:8px}
   .sim-row > .field:first-child .lbl{min-width:64px}
   .roleinfo{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;padding-top:1px}
-  .roleinfo b{font-size:12.5px;color:var(--text)}
-  .roleinfo span{font-size:12px;color:var(--muted)}
+  .roleinfo b{font-size:calc(12.5px * var(--text-scale));color:var(--text)}
+  .roleinfo span{font-size:calc(12px * var(--text-scale));color:var(--muted)}
   input[type=search],input[type=number],select{
-    font:inherit;font-size:13px;color:var(--text);background:var(--surface);border:1px solid var(--line);
+    font:inherit;font-size:calc(13px * var(--text-scale));color:var(--text);background:var(--surface);border:1px solid var(--line);
     border-radius:6px;padding:5px 9px;outline:none;transition:border-color .12s;
   }
   input[type=search]:hover,input[type=number]:hover,select:hover{border-color:var(--border-hover)}
   input[type=search]{flex:1 1 260px;min-width:220px}
-  input[type=number]{width:68px;font-family:var(--mono);font-size:12.5px}
+  input[type=number]{width:68px;font-family:var(--mono);font-size:calc(12.5px * var(--text-scale))}
   input[type=search]:focus,input[type=number]:focus,select:focus{
     border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)
   }
   button.reset{
-    font:inherit;font-size:12.5px;cursor:pointer;background:var(--surface);border:1px solid var(--line);
+    font:inherit;font-size:calc(12.5px * var(--text-scale));cursor:pointer;background:var(--surface);border:1px solid var(--line);
     border-radius:6px;padding:5px 12px;color:var(--text-2);font-weight:500;
   }
   button.reset:hover{border-color:var(--border-hover);background:var(--hover);color:var(--text)}
-  .check{display:inline-flex;align-items:center;gap:6px;color:var(--text-2);font-size:12.5px;white-space:nowrap;cursor:pointer}
+  .check{display:inline-flex;align-items:center;gap:6px;color:var(--text-2);font-size:calc(13px * var(--text-scale));white-space:nowrap;cursor:pointer}
+  .check span{font-weight:600}
   .check input{accent-color:var(--accent);margin:0}
   .chips{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
   .chip{
     font:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
     background:var(--surface);border:1px solid var(--line);color:var(--text-2);
-    border-radius:6px;padding:3px 9px;font-size:12px;font-weight:500;user-select:none;
+    border-radius:6px;padding:3px 9px;font-size:calc(12px * var(--text-scale));font-weight:500;user-select:none;
     transition:background .12s,border-color .12s,color .12s;
   }
   .chip:hover{background:var(--hover);border-color:var(--border-hover);color:var(--text)}
   .chip.on{background:var(--accent-soft);border-color:var(--accent-border);color:var(--accent-ink);font-weight:600}
   .chip .dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex:0 0 auto}
-  .hint2{color:var(--muted);font-size:11.5px}
+  .hint2{color:var(--muted);font-size:calc(11.5px * var(--text-scale))}
   .meta-bar{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin:12px 2px 6px;flex-wrap:wrap}
-  .meta-bar .count{font-weight:600;font-size:13px}
-  .meta-bar .hint{color:var(--muted);font-size:12px}
-  .tablewrap{overflow:auto;max-height:calc(100vh - 250px);border-radius:8px;scrollbar-gutter:stable}
+  .meta-bar .count{font-weight:600;font-size:calc(13px * var(--text-scale))}
+  .meta-bar .hint{color:var(--muted);font-size:calc(12px * var(--text-scale))}
+  .tablewrap{overflow:auto;max-height:calc(100vh - 40px);border-radius:8px;scrollbar-gutter:stable}
   .tablecard{border-radius:8px}
   .tablecard thead th:first-child{border-top-left-radius:7px}
   .tablecard thead th:last-child{border-top-right-radius:7px}
   table{border-collapse:separate;border-spacing:0;width:100%;min-width:0}
   thead th{
     position:sticky;top:0;z-index:2;background:var(--header);
-    text-align:left;font-size:11.5px;font-weight:600;color:var(--muted);
+    text-align:left;font-size:calc(11.5px * var(--text-scale));font-weight:600;color:var(--muted);
     padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap;
   }
   thead th.sortable{cursor:pointer;user-select:none}
@@ -145,47 +169,74 @@
   thead th .arrow{opacity:.22;font-size:9px;margin-left:4px;transition:opacity .12s}
   thead th.sortable:hover .arrow{opacity:.55}
   thead th.asc .arrow,thead th.desc .arrow{opacity:1;color:var(--accent)}
-  tbody td{padding:9px 10px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+  tbody td{padding:4px 10px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
   tbody tr:hover td{background:var(--hover)}
   tbody tr:last-child td{border-bottom:none}
-  td.num{text-align:right;font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
-  td.idx{color:var(--idx);font-size:12px}
+  td.num{text-align:right;font-family:var(--mono);font-size:calc(12.5px * var(--text-scale));font-variant-numeric:tabular-nums;white-space:nowrap}
+  td.idx{color:var(--idx);font-size:calc(12px * var(--text-scale))}
   th[data-k="rank"],td.idx{min-width:48px}
-  .zh{font-weight:600;white-space:nowrap;color:var(--text)}
-  .en{color:var(--muted);font-size:12px;white-space:nowrap}
+  .zh{display:flex;align-items:center;gap:4px;min-width:0;font-weight:600;white-space:nowrap;color:var(--text);line-height:1.3}
+  .zh .name{overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .en{color:var(--muted);font-size:calc(11px * var(--text-scale));line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .badge{
-    display:inline-block;font-size:10.5px;line-height:1;padding:2.5px 5.5px;border-radius:4px;
+    display:inline-block;font-size:calc(9.5px * var(--text-scale));line-height:1;padding:2px 4px;border-radius:4px;
     background:var(--warn-soft);color:var(--warn-ink);border:1px solid var(--warn-border);margin-left:6px;
     vertical-align:1px;white-space:nowrap;font-weight:500;
   }
   .badge.form{background:var(--badge-form-bg);color:var(--badge-form-fg);border-color:var(--badge-form-border)}
   .badge.special{background:var(--badge-spec-bg);color:var(--badge-spec-fg);border-color:var(--badge-spec-border)}
-  .badges{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+  .badges{display:inline-flex;flex-wrap:nowrap;gap:3px;margin-top:0}
   .badges .badge{margin-left:0}
   .pill{
-    display:inline-block;border-radius:4px;padding:2px 7px;font-size:11px;
+    display:inline-block;border-radius:4px;padding:2px 7px;font-size:calc(11px * var(--text-scale));
     margin:1px 3px 1px 0;white-space:nowrap;font-weight:600;letter-spacing:.01em;
   }
   .worktag{
-    display:inline-block;border-radius:4px;padding:2px 7px;font-size:11.5px;
+    display:inline-block;border-radius:4px;padding:2px 7px;font-size:calc(11.5px * var(--text-scale));
     background:var(--surface-2);color:var(--text-2);border:1px solid var(--line-soft);
     font-weight:500;white-space:nowrap;
   }
-  .statline{font-family:var(--cell-font, inherit);font-size:12px;color:var(--text-2);white-space:nowrap}
+  .statline{font-family:var(--cell-font, inherit);font-size:calc(12px * var(--text-scale));color:var(--text-2);white-space:nowrap}
   .statline .k{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--muted);margin-right:2px}
   .statline b{font-family:var(--mono);color:var(--text)}
-  .fixed-yield{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--muted);font-size:12px;white-space:nowrap}
+  .fixed-yield{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--muted);font-size:calc(12px * var(--text-scale));white-space:nowrap}
   .spval{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;min-width:44px;text-align:right;color:var(--text)}
   .empty{padding:48px 12px;text-align:center;color:var(--muted)}
-  .note{margin:10px 2px 0;color:var(--muted);font-size:12px;line-height:1.65}
+  .note{margin:10px 2px 0;color:var(--muted);font-size:calc(12px * var(--text-scale));line-height:1.65}
   .note b{color:var(--text-2)}
-  .site-footer{margin:24px 2px 0;padding:14px 2px 0;border-top:1px solid var(--line);color:var(--muted);font-size:12px;line-height:1.75}
-  .site-footer h2{margin:0 0 4px;color:var(--text-2);font-size:12px;font-weight:600}
+  .site-footer{margin:24px 2px 0;padding:14px 2px 0;border-top:1px solid var(--line);color:var(--muted);font-size:calc(12px * var(--text-scale));line-height:1.75}
+  .site-footer h2{margin:0 0 4px;color:var(--text-2);font-size:calc(12px * var(--text-scale));font-weight:600}
   .site-footer p{margin:2px 0}
   .site-footer a{color:var(--accent);text-decoration:none}
   .site-footer a:hover{text-decoration:underline}
   .filters{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;padding-top:2px;border-top:1px solid var(--line-soft)}
-  .form-category{max-width:170px;font-size:12px;padding:3px 7px}
+  .filters.special-row{border-top:0;padding-top:0}
+  .dex{color:var(--muted);font-size:calc(11px * var(--text-scale));font-family:var(--mono);font-weight:500;margin-left:4px;white-space:nowrap}
+  .pill.muted{filter:grayscale(1);opacity:.35}
+  .bonus-panel{border-top:1px solid var(--line-soft);padding-top:6px}
+  .bonus-title-row{display:flex;align-items:center;gap:8px;color:var(--text-2);font-size:calc(13px * var(--text-scale));font-weight:600}
+  .bonus-grid{display:flex;flex-wrap:wrap;gap:8px 16px;padding:8px 0 2px}
+  .bonus-grid .field{gap:8px}
+  .bonus-grid select{max-width:300px}
+  .bonus-na{color:var(--muted);font-size:calc(12px * var(--text-scale));font-style:italic;padding:4px 2px}
+  .bonus-state{margin-left:auto;color:var(--accent-ink);font-size:calc(12px * var(--text-scale));font-weight:500}
+  .bonus-hint{margin:0;color:var(--muted);font-size:calc(12.5px * var(--text-scale));font-weight:500}
+  .bonus-note{margin-top:3px}
+  .bonus-line{color:var(--accent-ink)}
+  .chips[hidden]{display:none}
+  #formChips{gap:5px}
+  .form-chip{display:inline-flex;align-items:stretch}
+  .form-chip .chip{border-radius:6px 0 0 6px;border-right:0}
+  .chip-solo{
+    font:inherit;font-size:calc(11px * var(--text-scale));line-height:1;cursor:pointer;
+    border:1px solid var(--line);border-radius:0 6px 6px 0;
+    background:var(--surface-2);color:var(--muted);padding:0 7px;
+    min-width:28px;min-height:28px;
+  }
+  .chip-solo:hover{background:var(--hover);border-color:var(--border-hover);color:var(--text-2)}
+  .chip-solo:active{transform:translateY(1px)}
+  .chip-solo.on{background:var(--accent-soft);border-color:var(--accent-border);color:var(--accent-ink);font-weight:600}
+  .chip-solo.on:hover{background:var(--accent-soft);border-color:var(--accent-border);color:var(--accent-ink)}
   .error{padding:16px;border:1px solid var(--error-border);background:var(--error-bg);color:var(--error-fg);border-radius:8px;margin-top:14px}
   [data-col][hidden],
   table.hide-multStat [data-col="multStat"],
@@ -200,20 +251,23 @@
   .calc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden}
   .calc-block{padding:9px 12px;border-right:1px solid var(--line-soft)}
   .calc-block:last-child{border-right:none}
-  .calc-block h4{margin:0 0 5px;font-size:11.5px;font-weight:600;color:var(--text-2);letter-spacing:.01em}
-  .calc-line{font-size:12px;color:var(--text-2);line-height:1.6;font-variant-numeric:tabular-nums}
-  .calc-line b{color:var(--text)}
+  .calc-block h4{margin:0 0 5px;font-size:calc(12px * var(--text-scale));font-weight:600;color:var(--text-2);letter-spacing:.01em}
+  .calc-line{font-size:calc(12.5px * var(--text-scale));color:var(--text-2);line-height:1.6;font-variant-numeric:tabular-nums}
+  .calc-line b{color:var(--text);font-weight:700}
   .calc-meta{margin-top:8px;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:9px 12px;display:flex;flex-direction:column;gap:7px}
   .calc-rec-bar{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;padding-bottom:6px;border-bottom:1px solid var(--line-soft)}
-  .calc-rec{color:var(--good-ink);background:var(--good-soft);border:1px solid var(--good-border);border-radius:4px;padding:2px 7px;font-size:12px;font-weight:600}
-  .calc-rec-delta{color:var(--text-2);font-size:12px;font-variant-numeric:tabular-nums}
-  .calc-advice{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:4px 16px;font-size:12px;color:var(--text-2);line-height:1.55}
+  .calc-rec{color:var(--good-ink);background:var(--good-soft);border:1px solid var(--good-border);border-radius:4px;padding:2px 7px;font-size:calc(12px * var(--text-scale));font-weight:600}
+  .calc-rec-delta{color:var(--text-2);font-size:calc(12px * var(--text-scale));font-variant-numeric:tabular-nums}
+  .calc-advice{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:4px 16px;font-size:calc(12px * var(--text-scale));color:var(--text-2);line-height:1.55}
   .calc-kv b{color:var(--text);font-weight:600}
-  .calc-note{margin-top:6px;color:var(--muted);font-size:11.5px;line-height:1.5}
+  .calc-note{margin-top:6px;color:var(--muted);font-size:calc(11.5px * var(--text-scale));line-height:1.5}
   @media (max-width:900px){
     .calc-grid{grid-template-columns:1fr}
     .calc-block{border-right:none;border-bottom:1px solid var(--line-soft)}
     .calc-block:last-child{border-bottom:none}
+  }
+  @media (max-width:820px){
+    .header-controls{position:static;margin-top:8px;justify-content:flex-end;flex-wrap:wrap}
   }
   @media (max-width:640px){
     body{padding:14px 10px 44px}
@@ -228,6 +282,11 @@
 <div class="wrap">
   <header>
     <div class="header-controls">
+      <div class="text-size" id="textSize" role="group" aria-label="Text size">
+        <button type="button" data-text-size="sm" data-i18n="ssc_bw.textSize.small">S</button>
+        <button type="button" data-text-size="md" data-i18n="ssc_bw.textSize.medium">M</button>
+        <button type="button" data-text-size="lg" data-i18n="ssc_bw.textSize.large">L</button>
+      </div>
       <div class="lang-switch">
         <label for="lang" data-i18n="ssc_bw.lang.label">Language</label>
         <select id="lang" aria-label="Language"></select>
@@ -237,7 +296,10 @@
       </button>
       <a class="import-link" href="import.html">导入数据</a>
     </div>
-    <h1 data-i18n="ssc_bw.page.heading">Sunlit Cobblemon · Best Worker</h1>
+    <div class="title-line">
+      <h1 data-i18n="ssc_bw.page.heading">Sunlit Cobblemon · Best Worker</h1>
+      <span class="site-version" title="Site version">v1.3.0</span>
+    </div>
     <p data-i18n="ssc_bw.page.subtitle">List every Pokémon that can work at a workstation, sorted and filtered by the station's actual formulas.</p>
     <div class="meta" id="meta"></div>
   </header>
@@ -273,15 +335,31 @@
       <label class="check"><input id="shiny" type="checkbox"> <span data-i18n="ssc_bw.label.shiny">Shiny (speed / yield / range ×2)</span></label>
     </div>
 
+    <p class="hint2 sim-hint" data-i18n="ssc_bw.hint.defaults">Default calculation: Lv.100 / 0 IV / 0 EV / Hardy (neutral). Not real-time data for your current Pokémon.</p>
+
+    <div class="bonus-panel" id="bonusPanel">
+      <div class="bonus-title-row">
+        <span data-i18n="ssc_bw.bonus.title">External bonuses</span>
+        <span class="bonus-state" id="bonusState"></span>
+      </div>
+      <div class="bonus-grid">
+        <label class="field"><span class="lbl" data-i18n="ssc_bw.bonus.energy">Energy Pylon</span><select id="battery" aria-label="Energy Pylon battery"></select><span class="bonus-na" id="batteryNA" data-i18n="ssc_bw.bonus.unavailable" hidden>Unavailable</span></label>
+        <label class="field"><span class="lbl" data-i18n="ssc_bw.bonus.crystal">Crystal Ball</span><select id="gem" aria-label="Crystal Ball gem"></select><span class="bonus-na" id="gemNA" data-i18n="ssc_bw.bonus.unavailable" hidden>Unavailable</span></label>
+      </div>
+      <p class="bonus-hint" id="bonusHint"></p>
+      <p class="bonus-hint bonus-note" data-i18n="ssc_bw.bonus.quickNote"></p>
+    </div>
+
     <div class="filters">
       <span class="lbl" data-i18n="ssc_bw.label.show">Show</span>
       <button type="button" class="chip form" id="formsChip" data-i18n="ssc_bw.chip.specialForms">Special Forms</button>
-      <select id="formCategory" class="form-category" aria-label="Form category"></select>
-      <button type="button" class="chip special" data-show="legendary" data-i18n="ssc_bw.chip.legendary">Legendary</button>
-      <button type="button" class="chip special" data-show="mythical" data-i18n="ssc_bw.chip.mythical">Mythical</button>
-      <button type="button" class="chip special" data-show="ultra" data-i18n="ssc_bw.chip.ultra">Ultra Beast</button>
-      <button type="button" class="chip special" data-show="paradox" data-i18n="ssc_bw.chip.paradox">Paradox</button>
-      <span class="hint2" data-i18n="ssc_bw.hint.defaults">Default calculation: Lv.100 / 0 IV / 0 EV / Hardy (neutral). Not real-time data for your current Pokémon.</span>
+      <span class="chips" id="formChips"></span>
+    </div>
+
+    <div class="filters special-row">
+      <span class="lbl" aria-hidden="true"></span>
+      <button type="button" class="chip special" id="specialTypesChip" data-i18n="ssc_bw.chip.specialTypes">Special Types</button>
+      <span class="chips" id="specialTypeChips"></span>
     </div>
   </section>
 
@@ -367,6 +445,53 @@
   let LANG = DEFAULT_LANG;
   let THEME = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
 
+  // Demo edition of external bonuses. Kept inline so the local demo works with
+  // existing imported data; later this can move into scripts/station-rules.js.
+  const TYPE_GEM_IDS = [
+    "normal", "fire", "water", "electric", "grass", "ice",
+    "fighting", "poison", "ground", "flying", "psychic", "bug",
+    "rock", "ghost", "dragon", "dark", "steel", "fairy",
+  ];
+  const EXTERNAL_BONUSES = {
+    energyPylon: {
+      appliesToStations: ["craft_station", "gardening_station", "mystery_mine", "crystal_ball", "energy_pylon"],
+      batteries: [
+        { id: "society_battery", item: "society:battery", bonusSpeed: 1.5, consumeChance: 0.2 },
+        { id: "cell_battery", item: "cobblemon:cell_battery", bonusSpeed: 1.75, consumeChance: 0.15 },
+        { id: "viral_battery", item: "sunlit_cobblemon:viral_battery", bonusSpeed: 1.8, consumeChance: 0.05 },
+        { id: "booster_energy", item: "cobblemon:booster_energy", bonusSpeed: 4, consumeChance: 0.2 },
+        { id: "spectral_battery", item: "cobblemon_farmers:spectral_battery", bonusSpeed: 2, consumeChance: 0.75 },
+        { id: "endless_battery", item: "sunlit_cobblemon:endless_battery", bonusSpeed: 0.15, consumeChance: 0 },
+      ],
+    },
+    crystalBall: {
+      appliesToStations: ["craft_station", "mystery_mine"],
+      gems: [
+        { id: "amethyst_shard", item: "minecraft:amethyst_shard", bonusChance: 0.08, consumeChance: 1, affectedTypes: ["fairy", "psychic", "ghost"] },
+        { id: "prismarine_crystals", item: "minecraft:prismarine_crystals", bonusChance: 0.08, consumeChance: 1, affectedTypes: ["water", "ice", "grass"] },
+        { id: "emerald", item: "minecraft:emerald", bonusChance: 0.12, consumeChance: 1, affectedTypes: ["dark", "dragon", "fighting"] },
+        { id: "diamond", item: "minecraft:diamond", bonusChance: 0.15, consumeChance: 0.4, affectedTypes: [] },
+        ...TYPE_GEM_IDS.map((type) => ({
+          id: `${type}_gem`,
+          item: `cobblemon:${type}_gem`,
+          bonusChance: 0.25,
+          consumeChance: 0.5,
+          affectedTypes: [type],
+        })),
+      ],
+    },
+  };
+  const BATTERY_BY_ID = Object.fromEntries(
+    EXTERNAL_BONUSES.energyPylon.batteries.map((battery) => [battery.id, battery])
+  );
+  const GEM_BY_ID = Object.fromEntries(
+    EXTERNAL_BONUSES.crystalBall.gems.map((gem) => [gem.id, gem])
+  );
+  const TYPE_GEM_CHOICE = "type_gem";
+  const COMMON_GEMS = EXTERNAL_BONUSES.crystalBall.gems.filter(
+    (gem) => !(gem.affectedTypes.length === 1 && gem.id === `${gem.affectedTypes[0]}_gem`)
+  );
+
   function langTable(lang = LANG) {
     return LANG_DATA[LANGS[lang]] || LANG_DATA.en_us || {};
   }
@@ -401,13 +526,110 @@
       .join("");
   }
 
-  function buildFormCategoryOptions() {
-    $("formCategory").innerHTML = FORM_CATEGORIES
+  function buildFormChips() {
+    $("formChips").innerHTML = FORM_CHIP_CATEGORIES
       .map((category) => {
-        const key = category ? `ssc_bw.formCategory.${category}` : "ssc_bw.formCategory.all";
-        return `<option value="${esc(category)}">${esc(t(key))}</option>`;
+        const key = `ssc_bw.formCategory.${category}`;
+        const onlyTitle = esc(t("ssc_bw.formCategory.onlyTitle"));
+        return `<span class="form-chip"><button type="button" class="chip form" data-form-cat="${esc(category)}" aria-pressed="false">${esc(t(key))}</button><button type="button" class="chip-solo" data-form-solo="${esc(category)}" title="${onlyTitle}" aria-label="${onlyTitle}">${esc(t("ssc_bw.formCategory.only"))}</button></span>`;
       })
       .join("");
+  }
+
+  function buildSpecialTypeChips() {
+    $("specialTypeChips").innerHTML = SPECIAL_SHOWS
+      .map(({ id, key }) => {
+        const label = t(key);
+        const onlyTitle = t("ssc_bw.chip.onlyTitle", { label });
+        return `<span class="form-chip"><button type="button" class="chip special" data-show="${esc(id)}" aria-pressed="false">${esc(label)}</button><button type="button" class="chip-solo" data-show-only="${esc(id)}" title="${esc(onlyTitle)}" aria-label="${esc(onlyTitle)}">${esc(t("ssc_bw.formCategory.only"))}</button></span>`;
+      })
+      .join("");
+  }
+
+  function batteryLabel(battery) {
+    return t(`ssc_bw.bonus.battery.${battery.id}`, null, battery.id);
+  }
+
+  function gemLabel(gem) {
+    if (gem.affectedTypes.length === 1 && gem.id === `${gem.affectedTypes[0]}_gem`) {
+      return t("ssc_bw.bonus.typeGem", { type: typeName(gem.affectedTypes[0]) });
+    }
+    return t(`ssc_bw.bonus.gem.${gem.id}`, null, gem.id);
+  }
+
+  function buildBonusOptions() {
+    const none = `<option value="">${esc(t("ssc_bw.bonus.none"))}</option>`;
+    $("battery").innerHTML = none + EXTERNAL_BONUSES.energyPylon.batteries
+      .map((battery) => `<option value="${esc(battery.id)}">${esc(batteryLabel(battery))} (${esc(fmtSpeedBonus(battery.bonusSpeed))})</option>`)
+      .join("");
+    $("gem").innerHTML = none + COMMON_GEMS
+      .map((gem) => `<option value="${esc(gem.id)}">${esc(gemLabel(gem))} (+${(gem.bonusChance * 100).toFixed(0)}%)</option>`)
+      .join("") +
+      `<option value="${TYPE_GEM_CHOICE}">${esc(t("ssc_bw.bonus.typeGemAuto"))} (+25%)</option>`;
+  }
+
+  function selectionHasYield(station) {
+    const typeFilter = state.types[0] || "";
+    const workFilter = state.works[0] || "";
+    return workOptions(station).some((opt) => (
+      (!typeFilter || opt.typeDef.id === typeFilter) &&
+      (!workFilter || opt.key === workFilter) &&
+      Boolean(opt.variant.multStat)
+    ));
+  }
+
+  function updateBonusControls(station) {
+    const batterySelect = $("battery");
+    const gemSelect = $("gem");
+    if (batterySelect.value !== state.battery) batterySelect.value = state.battery;
+    if (gemSelect.value !== state.gem) gemSelect.value = state.gem;
+
+    const energyOk = EXTERNAL_BONUSES.energyPylon.appliesToStations.includes(station.id);
+    const crystalStationOk = EXTERNAL_BONUSES.crystalBall.appliesToStations.includes(station.id);
+    const crystalHasYield = crystalStationOk && selectionHasYield(station);
+    const crystalOk = crystalStationOk && crystalHasYield;
+    batterySelect.disabled = !energyOk;
+    gemSelect.disabled = !crystalOk;
+    batterySelect.hidden = !energyOk;
+    gemSelect.hidden = !crystalOk;
+    $("batteryNA").hidden = energyOk;
+    $("gemNA").hidden = crystalOk;
+
+    const typeId = state.types[0] || "";
+    const gem = selectedGemFor(typeId);
+    const gemMatches = Boolean(
+      crystalOk && (
+        state.gem === TYPE_GEM_CHOICE
+          ? (typeId ? Boolean(gem) : true)
+          : gem && (gem.affectedTypes.length === 0 || !typeId || gem.affectedTypes.includes(typeId))
+      )
+    );
+
+    const active = [];
+    if (energyOk && state.battery && BATTERY_BY_ID[state.battery]) {
+      active.push(batteryLabel(BATTERY_BY_ID[state.battery]));
+    }
+    if (crystalOk) {
+      if (state.gem === TYPE_GEM_CHOICE) {
+        if (typeId && gem) active.push(gemLabel(gem));
+        else active.push(t("ssc_bw.bonus.typeGemAuto"));
+      } else if (gemMatches) {
+        active.push(gemLabel(gem));
+      }
+    }
+    $("bonusState").textContent = active.join(" · ");
+
+    let hint;
+    if (energyOk && crystalOk) hint = t("ssc_bw.bonus.both");
+    else if (energyOk && crystalStationOk && !crystalHasYield) hint = t("ssc_bw.bonus.energyNoYield");
+    else if (energyOk) hint = t("ssc_bw.bonus.energyOnly");
+    else if (crystalOk) hint = t("ssc_bw.bonus.crystalOnly");
+    else if (crystalStationOk && !crystalHasYield) hint = t("ssc_bw.bonus.noYield");
+    else hint = t("ssc_bw.bonus.noneApply");
+    if (crystalOk && state.gem !== TYPE_GEM_CHOICE && gem && !gemMatches && typeId) {
+      hint += ` ${t("ssc_bw.bonus.gemMismatch")}`;
+    }
+    $("bonusHint").innerHTML = boldColonText(hint);
   }
 
   function updateThemeButton() {
@@ -427,6 +649,22 @@
       try { localStorage.setItem("ssc_bw.theme", THEME); } catch (_) {}
     }
     updateThemeButton();
+  }
+
+  function applyTextSize(size, persist = true) {
+    state.textSize = ["sm", "md", "lg"].includes(size) ? size : "md";
+    document.documentElement.dataset.textSize = state.textSize;
+    if (persist) {
+      try { localStorage.setItem("ssc_bw.textSize", state.textSize); } catch (_) {}
+    }
+    const group = $("textSize");
+    if (group) {
+      group.querySelectorAll("[data-text-size]").forEach((btn) => {
+        const on = btn.dataset.textSize === state.textSize;
+        btn.classList.toggle("on", on);
+        btn.setAttribute("aria-pressed", String(on));
+      });
+    }
   }
 
   if (!D) {
@@ -518,13 +756,6 @@
     return "other";
   }
 
-  function matchesFormCategory(p, category) {
-    if (!category) return true;
-    const current = p._formCat !== undefined ? p._formCat : formCategory(p);
-    if (category === "regional") return current.startsWith("regional-");
-    return current === category;
-  }
-
   function natureName(id) {
     return t(`ssc_bw.nature.${id}`, null, id);
   }
@@ -540,9 +771,13 @@
   }
 
   const ALL_SHOWS = ["legendary", "mythical", "ultra", "paradox"];
-  const FORM_CATEGORIES = [
-    "",
-    "regional",
+  const SPECIAL_SHOWS = [
+    { id: "legendary", key: "ssc_bw.chip.legendary" },
+    { id: "mythical", key: "ssc_bw.chip.mythical" },
+    { id: "ultra", key: "ssc_bw.chip.ultra" },
+    { id: "paradox", key: "ssc_bw.chip.paradox" },
+  ];
+  const FORM_CHIP_CATEGORIES = [
     "regional-alola",
     "regional-galar",
     "regional-hisui",
@@ -593,8 +828,12 @@
     ev: 0,
     nature: "hardy",
     shiny: false,
-    includeForms: true,
-    formCategory: "",
+    textSize: "md",
+    formCategories: [],
+    formOnly: "",
+    battery: "",
+    gem: "",
+    specialOnly: false,
     shows: [...ALL_SHOWS],
     expanded: null,
     sortKey: "score",
@@ -605,6 +844,9 @@
     ...DEFAULTS,
     types: [],
     works: [],
+    textSize: document.documentElement.dataset.textSize || "md",
+    formCategories: [],
+    formOnly: "",
     shows: [...ALL_SHOWS],
   };
 
@@ -628,8 +870,35 @@
       if (p.get("ev")) state.ev = clampInt(p.get("ev"), 0, 252, 0);
       if (p.get("nature") && NATURE_BY_ID[p.get("nature")]) state.nature = p.get("nature");
       state.shiny = p.get("shiny") === "1";
-      if (p.has("forms")) state.includeForms = p.get("forms") === "1";
-      if (p.get("form") && FORM_CATEGORIES.includes(p.get("form"))) state.formCategory = p.get("form");
+      if (["sm", "md", "lg"].includes(p.get("size"))) state.textSize = p.get("size");
+      const formsParam = p.get("forms");
+      if (formsParam === "0") state.formCategories = [];
+      else if (formsParam === "1" && !p.get("form") && !p.get("only")) {
+        state.formCategories = [...FORM_CHIP_CATEGORIES];
+      }
+      if (p.get("form")) {
+        const requested = p.get("form").split(",").filter(Boolean);
+        const expanded = [];
+        for (const category of requested) {
+          if (category === "regional") expanded.push(...FORM_CHIP_CATEGORIES.filter((c) => c.startsWith("regional-")));
+          else if (FORM_CHIP_CATEGORIES.includes(category)) expanded.push(category);
+        }
+        state.formCategories = FORM_CHIP_CATEGORIES.filter((c) => expanded.includes(c));
+      }
+      const onlyParam = p.get("only");
+      if (onlyParam && FORM_CHIP_CATEGORIES.includes(onlyParam)) {
+        state.formOnly = onlyParam;
+        state.formCategories = [onlyParam];
+      }
+      if (p.get("battery") && BATTERY_BY_ID[p.get("battery")]) state.battery = p.get("battery");
+      const gemParam = p.get("gem");
+      if (gemParam === TYPE_GEM_CHOICE) {
+        state.gem = TYPE_GEM_CHOICE;
+      } else if (gemParam && GEM_BY_ID[gemParam]) {
+        // Old links could point at a specific type gem; fold them into the
+        // single auto-matching option.
+        state.gem = gemParam.endsWith("_gem") ? TYPE_GEM_CHOICE : gemParam;
+      }
       if (p.has("show")) state.shows = p.get("show") ? p.get("show").split(",").filter(Boolean) : [];
       // 兼容旧链接：exclude=legendary 表示“除了传说都显示”
       if (p.has("exclude")) {
@@ -637,6 +906,8 @@
         state.shows = ALL_SHOWS.filter((k) => !excluded.includes(k));
       }
       if (p.get("special") === "1") state.shows = [];
+      state.specialOnly = p.get("specialOnly") === "1";
+      if (state.specialOnly && !state.shows.length) state.shows = [...ALL_SHOWS];
       if (p.get("sort")) state.sortKey = p.get("sort");
       if (p.get("dir")) state.sortDir = Number(p.get("dir")) === 1 ? 1 : -1;
     } catch (_) {}
@@ -661,14 +932,21 @@
       if (state.ev !== 0) p.set("ev", String(state.ev));
       if (state.nature !== "hardy") p.set("nature", state.nature);
       if (state.shiny) p.set("shiny", "1");
-      if (!state.includeForms) p.set("forms", "0");
-      if (state.includeForms && state.formCategory) p.set("form", state.formCategory);
+      if (state.formOnly) p.set("only", state.formOnly);
+      else if (state.formCategories.length) p.set("form", state.formCategories.join(","));
+      if (state.battery) p.set("battery", state.battery);
+      if (state.gem) p.set("gem", state.gem);
       if (state.shows.length !== ALL_SHOWS.length || !ALL_SHOWS.every((k) => state.shows.includes(k))) {
         p.set("show", state.shows.join(","));
       }
+      if (state.specialOnly) p.set("specialOnly", "1");
       if (state.sortKey !== "score") p.set("sort", state.sortKey);
       if (state.sortDir !== -1) p.set("dir", String(state.sortDir));
       if (LANG !== DEFAULT_LANG) p.set("lang", LANG);
+      if (state.textSize !== "md") p.set("size", state.textSize);
+      try {
+        if (new URLSearchParams(location.search).get("bundled") === "1") p.set("bundled", "1");
+      } catch (_) {}
       const nextSearch = `?${p.toString()}`;
       if (nextSearch === lastUrlSearch) return;
       lastUrlSearch = nextSearch;
@@ -793,25 +1071,81 @@
     return typeDef.variants.find((v) => v.id === variantId) || typeDef.variants[0];
   }
 
+  function findBattery(id) {
+    return id ? BATTERY_BY_ID[id] || null : null;
+  }
+
+  function findGem(id) {
+    return id ? GEM_BY_ID[id] || null : null;
+  }
+
+  function selectedGemFor(typeId) {
+    if (state.gem === TYPE_GEM_CHOICE) return findGem(`${typeId}_gem`);
+    return findGem(state.gem);
+  }
+
+  function fmtSpeedBonus(value) {
+    return `${value >= 0 ? "+" : ""}${value.toFixed(2)}x`;
+  }
+
+  function applyExternalBonuses(station, typeId, baseSpeed, baseMult) {
+    const battery = findBattery(state.battery);
+    const batteryApplies = Boolean(
+      battery && EXTERNAL_BONUSES.energyPylon.appliesToStations.includes(station.id)
+    );
+    const gem = selectedGemFor(typeId);
+    const gemApplies = Boolean(
+      gem &&
+      EXTERNAL_BONUSES.crystalBall.appliesToStations.includes(station.id) &&
+      (gem.affectedTypes.length === 0 || gem.affectedTypes.includes(typeId))
+    );
+
+    let speed = baseSpeed;
+    let mult = baseMult;
+    if (batteryApplies) speed = Math.round((speed + battery.bonusSpeed) * 100) / 100;
+    if (gemApplies) mult = Math.round(mult * (1 + gem.bonusChance));
+
+    const score = station.mode === "action" ? speed : speed * (1 + mult / 100);
+    return {
+      speed,
+      mult,
+      score,
+      appliedBattery: batteryApplies ? battery : null,
+      appliedGem: gemApplies ? gem : null,
+    };
+  }
+
   function calcWork(p, station, typeDef, variant, optKey) {
     const get = (key) => statAt(p.baseStats[key], state.level, state.iv, state.ev, key, key === "hp");
     const speedValue = get(variant.speedStat);
-    const speed = speedModifier(speedValue, state.shiny);
+    const baseSpeed = speedModifier(speedValue, state.shiny);
     const multValue = variant.multStat ? get(variant.multStat) : null;
-    const mult = multValue == null ? 0 : multChance(multValue, state.shiny);
-    const score = station.mode === "action" ? speed : speed * (1 + mult / 100);
+    const baseMult = multValue == null ? 0 : multChance(multValue, state.shiny);
+    const baseScore = station.mode === "action" ? baseSpeed : baseSpeed * (1 + baseMult / 100);
+    const applied = applyExternalBonuses(station, typeDef.id, baseSpeed, baseMult);
     const aoe = station.mode === "buff" ? aoeRadius(get(station.aoeStat), state.shiny) : null;
     const range = station.mode === "action" ? Math.max(1, Math.min(10, Math.floor(state.level / 10))) : aoe;
     const baseTime = typeDef.baseTime || variant.baseTime || 0;
-    const actionTime = station.mode === "action" ? baseTime / speed / 20 : null;
-    return { p, station, typeDef, variant, optKey: optKey || workKey(typeDef, variant), speedValue, multValue, speed, mult, score, aoe, range, baseTime, actionTime };
+    const actionTime = station.mode === "action" ? baseTime / applied.speed / 20 : null;
+    return {
+      p, station, typeDef, variant, optKey: optKey || workKey(typeDef, variant),
+      speedValue, multValue, baseSpeed, baseMult, baseScore,
+      speed: applied.speed, mult: applied.mult, score: applied.score,
+      appliedBattery: applied.appliedBattery, appliedGem: applied.appliedGem,
+      aoe, range, baseTime, actionTime,
+    };
   }
 
-  function scoreForValues(station, speedValue, multValue) {
-    const speed = speedModifier(speedValue, state.shiny);
-    const mult = multValue == null ? 0 : multChance(multValue, state.shiny);
-    const score = station.mode === "action" ? speed : speed * (1 + mult / 100);
-    return { speed, mult, score };
+  function scoreForValues(station, typeId, speedValue, multValue) {
+    const baseSpeed = speedModifier(speedValue, state.shiny);
+    const baseMult = multValue == null ? 0 : multChance(multValue, state.shiny);
+    const baseScore = station.mode === "action" ? baseSpeed : baseSpeed * (1 + baseMult / 100);
+    const applied = applyExternalBonuses(station, typeId, baseSpeed, baseMult);
+    return {
+      baseSpeed, baseMult, baseScore,
+      speed: applied.speed, mult: applied.mult, score: applied.score,
+      appliedBattery: applied.appliedBattery, appliedGem: applied.appliedGem,
+    };
   }
 
   function workKey(typeDef, variant) {
@@ -875,6 +1209,22 @@
     return `${sign}${value.toFixed(3)}`;
   }
 
+  function boldColonText(text) {
+    const match = String(text).match(/^([^：:]+)([：:])(.*)$/);
+    return match
+      ? `<b>${esc(match[1])}</b>${esc(match[2])}${esc(match[3])}`
+      : esc(text);
+  }
+
+  function boldCalcLabels(html) {
+    return html.replace(
+      /<div class="calc-line([^"]*)">([^<:：]+)([：:])([^<]*)<\/div>/g,
+      (match, classes, label, colon, rest) => (
+        `<div class="calc-line${classes}"><b>${label}</b>${colon}${rest}</div>`
+      )
+    );
+  }
+
   function calcHtml(row) {
     const p = row.p;
     const work = row.work;
@@ -883,7 +1233,7 @@
     const speedBase = p.baseStats[v.speedStat];
     const speedRaw = work.speedValue / 127.5;
     const speedBefore = Math.floor(speedRaw * 100) / 100;
-    const speedPlus = scoreForValues(station, work.speedValue + 1, work.multValue);
+    const speedPlus = scoreForValues(station, work.typeDef.id, work.speedValue + 1, work.multValue);
     const speedDelta = speedPlus.score - work.score;
 
     let multBase = null;
@@ -895,9 +1245,12 @@
       multBase = p.baseStats[v.multStat];
       multRaw = work.multValue / 127.5;
       multBefore = Math.floor(multRaw * 100);
-      multPlus = scoreForValues(station, work.speedValue, work.multValue + 1);
+      multPlus = scoreForValues(station, work.typeDef.id, work.speedValue, work.multValue + 1);
       multDelta = multPlus.score - work.score;
     }
+
+    const hasBonus = Boolean(work.appliedBattery || work.appliedGem);
+    const gainPct = work.baseScore > 0 ? (work.score / work.baseScore - 1) * 100 : 0;
 
     const speedBlock = `<div class="calc-block"><h4>${esc(t("ssc_bw.calc.speed.title", { stat: statName(v.speedStat) }))}</h4>
       <div class="calc-line">${esc(t("ssc_bw.calc.baseStat", { value: speedBase }))}</div>
@@ -905,7 +1258,8 @@
       <div class="calc-line">${esc(t("ssc_bw.calc.basis", { level: state.level, iv: state.iv, ev: state.ev, nature: natureText() }))}</div>
       <div class="calc-line">${esc(t("ssc_bw.calc.divide127", { value: work.speedValue, result: speedRaw.toFixed(4) }))}</div>
       <div class="calc-line">${esc(t("ssc_bw.calc.floor2", { value: speedBefore.toFixed(2) }))}</div>
-      <div class="calc-line">${esc(t("ssc_bw.calc.shinySpeed", { factor: state.shiny ? 2 : 1, value: work.speed.toFixed(2) }))}</div>
+      <div class="calc-line">${esc(t("ssc_bw.calc.shinySpeed", { factor: state.shiny ? 2 : 1, value: work.baseSpeed.toFixed(2) }))}</div>
+      ${work.appliedBattery ? `<div class="calc-line bonus-line">${esc(t("ssc_bw.calc.energyLine", { bonus: fmtSpeedBonus(work.appliedBattery.bonusSpeed), value: work.speed.toFixed(2) }))}</div>` : ""}
     </div>`;
 
     let outputBlock;
@@ -916,7 +1270,8 @@
           <div class="calc-line">${esc(t("ssc_bw.calc.statValue", { value: work.multValue }))}</div>
           <div class="calc-line">${esc(t("ssc_bw.calc.divide127", { value: work.multValue, result: multRaw.toFixed(4) }))}</div>
           <div class="calc-line">${esc(t("ssc_bw.calc.floorPct", { value: multBefore }))}</div>
-          <div class="calc-line">${esc(t("ssc_bw.calc.shinyMult", { factor: state.shiny ? 2 : 1, value: work.mult }))}</div>
+          <div class="calc-line">${esc(t("ssc_bw.calc.shinyMult", { factor: state.shiny ? 2 : 1, value: work.baseMult }))}</div>
+          ${work.appliedGem ? `<div class="calc-line bonus-line">${esc(t("ssc_bw.calc.gemLine", { gem: gemLabel(work.appliedGem), factor: (1 + work.appliedGem.bonusChance).toFixed(2), value: work.mult }))}</div>` : ""}
           <div class="calc-line">${esc(t("ssc_bw.calc.expected", { value: work.mult, result: (1 + work.mult / 100).toFixed(2) }))}</div>
         </div>`
         : `<div class="calc-block"><h4>${esc(t("ssc_bw.calc.mult.noneTitle"))}</h4><div class="calc-line">${esc(t("ssc_bw.calc.mult.noneBody"))}</div></div>`;
@@ -938,6 +1293,8 @@
     const multName = v.multStat ? statName(v.multStat) : "";
     const scoreBlock = `<div class="calc-block"><h4>${esc(t("ssc_bw.calc.score.title"))}</h4>
       <div class="calc-line">${esc(t(station.mode === "recipe" ? "ssc_bw.calc.score.formulaRecipe" : "ssc_bw.calc.score.formulaSpeed", { value: work.score.toFixed(2) }))}</div>
+      ${hasBonus ? `<div class="calc-line">${esc(t("ssc_bw.calc.score.base", { value: work.baseScore.toFixed(2) }))}</div>
+      <div class="calc-line bonus-line">${esc(t("ssc_bw.calc.score.gain", { value: gainPct.toFixed(1) }))}</div>` : ""}
       <div class="calc-line">${esc(t("ssc_bw.calc.score.statPlus", { stat: speedName, score: speedPlus.score.toFixed(3), delta: fmtDelta(speedDelta) }))}</div>
       ${v.multStat ? `<div class="calc-line">${esc(t("ssc_bw.calc.score.statPlusMult", { stat: multName, score: multPlus.score.toFixed(3), delta: fmtDelta(multDelta) }))}</div>` : ""}
       ${station.mode === "action" ? `<div class="calc-line">${esc(t("ssc_bw.calc.score.actionPlus", { stat: speedName, time: fmtDuration(work.baseTime / speedPlus.speed / 20) }))}</div>` : ""}
@@ -963,7 +1320,7 @@
       : t("ssc_bw.calc.advice.ivNotMax", { iv: state.iv, stat: targetName });
     const evAdvice = t("ssc_bw.calc.advice.evText", { stat: targetName });
 
-    return `<div class="calc-wrap">
+    const html = `<div class="calc-wrap">
       <div class="calc-grid">${speedBlock}${outputBlock}${scoreBlock}</div>
       <div class="calc-meta">
         <div class="calc-rec-bar">
@@ -980,6 +1337,7 @@
       </div>
       <div class="calc-note">${esc(t("ssc_bw.calc.note"))}</div>
     </div>`;
+    return boldCalcLabels(html);
   }
 
   const TYPE_PILL_CACHE = {};
@@ -990,12 +1348,12 @@
     TYPE_FG[type] = (r * 299 + g * 587 + b * 114) / 1000 >= 150 ? "#20262f" : "#fff";
   }
 
-  function typePill(type) {
-    const key = `${LANG}:${type}`;
+  function typePill(type, muted = false) {
+    const key = `${LANG}:${type}:${muted ? 1 : 0}`;
     if (TYPE_PILL_CACHE[key]) return TYPE_PILL_CACHE[key];
     const color = TYPE_COLORS[type] || "#999";
     const fg = TYPE_FG[type] || "#fff";
-    const html = `<span class="pill" style="background:${color};color:${fg}">${esc(typeName(type))}</span>`;
+    const html = `<span class="pill${muted ? " muted" : ""}" style="background:${color};color:${fg}">${esc(typeName(type))}</span>`;
     TYPE_PILL_CACHE[key] = html;
     return html;
   }
@@ -1043,7 +1401,7 @@
   function currentRows() {
     const station = getStation();
     const q = state.q.trim().toLowerCase();
-    const filterKey = `${station.id}|${state.types[0] || ""}|${state.works[0] || ""}|${q}|${state.level}|${state.iv}|${state.ev}|${state.nature}|${state.shiny ? 1 : 0}|${state.includeForms ? 1 : 0}|${state.formCategory}|${state.shows.join(",")}|${LANG}`;
+    const filterKey = `${station.id}|${state.types[0] || ""}|${state.works[0] || ""}|${q}|${state.level}|${state.iv}|${state.ev}|${state.nature}|${state.shiny ? 1 : 0}|${state.formOnly}|${state.formCategories.join(",")}|${state.battery}|${state.gem}|${state.specialOnly ? 1 : 0}|${state.shows.join(",")}|${LANG}`;
 
     if (filterKey !== cachedFilterKey) {
       const typeFilter = state.types[0] || "";
@@ -1063,12 +1421,13 @@
       let hasMult = false;
       for (let i = 0; i < D.pokemon.length; i++) {
         const p = D.pokemon[i];
-        if (!state.includeForms) {
-          if (p.isForm) continue;
-        } else if (state.formCategory) {
-          if (!p.isForm || !matchesFormCategory(p, state.formCategory)) continue;
+        if (state.formOnly) {
+          if (!p.isForm || p._formCat !== state.formOnly) continue;
+        } else if (p.isForm && !state.formCategories.includes(p._formCat)) {
+          continue;
         }
         if (p._specialMask && (p._specialMask & showMask) === 0) continue;
+        if (state.specialOnly && !p._specialMask) continue;
         if (q && !p._searchHay.includes(q)) continue;
         const work = bestWorkForPokemon(p, station, selectedOptions);
         if (!work) continue;
@@ -1219,14 +1578,39 @@
       btn.classList.toggle("on", key === "all" ? !activeWorkKey : key === activeWorkKey);
     }
 
-    $("formsChip").classList.toggle("on", state.includeForms);
-    $("formsChip").setAttribute("aria-pressed", String(state.includeForms));
-    $("formCategory").hidden = !state.includeForms;
-    if ($("formCategory").value !== state.formCategory) $("formCategory").value = state.formCategory;
+    const hasForms = Boolean(state.formOnly) || state.formCategories.length > 0;
+    $("formsChip").classList.toggle("on", hasForms);
+    $("formsChip").setAttribute("aria-pressed", String(hasForms));
+    const formBtns = document.querySelectorAll("#formChips [data-form-cat]");
+    for (let i = 0; i < formBtns.length; i++) {
+      const btn = formBtns[i];
+      const on = state.formOnly
+        ? btn.dataset.formCat === state.formOnly
+        : state.formCategories.includes(btn.dataset.formCat);
+      btn.classList.toggle("on", on);
+      btn.setAttribute("aria-pressed", String(on));
+    }
+    const soloBtns = document.querySelectorAll("#formChips [data-form-solo]");
+    for (let i = 0; i < soloBtns.length; i++) {
+      const btn = soloBtns[i];
+      const on = state.formOnly === btn.dataset.formSolo;
+      btn.classList.toggle("on", on);
+      btn.setAttribute("aria-pressed", String(on));
+    }
+    const specialTypesChip = $("specialTypesChip");
+    specialTypesChip.classList.toggle("on", state.shows.length > 0);
+    specialTypesChip.setAttribute("aria-pressed", String(state.shows.length > 0));
     const showBtns = document.querySelectorAll("[data-show]");
     for (let i = 0; i < showBtns.length; i++) {
       const btn = showBtns[i];
       const on = state.shows.includes(btn.dataset.show);
+      btn.classList.toggle("on", on);
+      btn.setAttribute("aria-pressed", String(on));
+    }
+    const showOnlyBtns = document.querySelectorAll("[data-show-only]");
+    for (let i = 0; i < showOnlyBtns.length; i++) {
+      const btn = showOnlyBtns[i];
+      const on = state.specialOnly && state.shows.includes(btn.dataset.showOnly);
       btn.classList.toggle("on", on);
       btn.setAttribute("aria-pressed", String(on));
     }
@@ -1237,6 +1621,7 @@
     if ($("ev").value !== String(state.ev)) $("ev").value = state.ev;
     if ($("nature").value !== state.nature) $("nature").value = state.nature;
     if ($("shiny").checked !== state.shiny) $("shiny").checked = state.shiny;
+    updateBonusControls(station);
 
     if (typeChipsKey !== builtNoteKey) {
       builtNoteKey = typeChipsKey;
@@ -1285,11 +1670,10 @@
 
   function estimateRowHeight(row, showProd) {
     const hasSecondary = Boolean(row.secondaryName);
-    const hasBadges = Boolean(row.p._badgeMask);
-    const nameLines = 1 + (hasSecondary ? 1 : 0) + (hasBadges ? 1 : 0);
-    if (nameLines >= 3) return 80;
-    if (nameLines === 2) return 59;
-    return showProd ? 56 : 39;
+    const nameLines = 1 + (hasSecondary ? 1 : 0);
+    const scale = state.textSize === "lg" ? 1.24 : state.textSize === "sm" ? 1 : 1.1;
+    const height = nameLines >= 2 ? 46 : 32;
+    return Math.round(height * scale);
   }
 
   function rebuildRowOffsets(rows, showProd) {
@@ -1328,7 +1712,7 @@
     const winH = window.innerHeight || 900;
     cachedWrapWidth = winW;
     if (winW > 640) {
-      cachedViewHeight = Math.max(360, winH - 260);
+      cachedViewHeight = Math.max(360, winH - 60);
       cachedScrollTop = tableWrapEl.scrollTop;
     } else {
       cachedViewHeight = winH;
@@ -1373,12 +1757,15 @@
       prod = `<div class="spval">${fmtDuration(work.actionTime)}</div><div class="hint2">${esc(t("ssc_bw.calc.action.base", { ticks: work.baseTime }))}</div>`;
     }
 
-    const typeTags = p.types.map(typePill).join("");
+    const activeType = state.types[0] || "";
+    const typeTags = p.types.map((type) => typePill(type, Boolean(activeType) && type !== activeType)).join("");
     const role = station.id === "craft_station"
       ? variantName(station, work.typeDef, work.variant)
       : roleName(station, work.typeDef);
     const expanded = state.expanded === rowKey;
     const badgeHtml = badges(p);
+    const hasBonus = Boolean(work.appliedBattery || work.appliedGem);
+    const gainPct = work.baseScore > 0 ? (work.score / work.baseScore - 1) * 100 : 0;
     const speedStatKey = work.variant.speedStat;
     const speedStatLabel = esc(statName(speedStatKey));
     const speedBase = p.baseStats[speedStatKey];
@@ -1399,9 +1786,8 @@
     let html = `<tr class="row-main${expanded ? " open" : ""}" data-key="${esc(rowKey)}" tabindex="0">
       <td class="idx num">${idx + 1}</td>
       <td>
-        <div class="zh">${esc(primaryName)}</div>
+        <div class="zh"><span class="name">${esc(primaryName)}</span>${p.dex != null ? `<span class="dex">#${String(p.dex).padStart(4, "0")}</span>` : ""}${badgeHtml ? `<span class="badges">${badgeHtml}</span>` : ""}</div>
         ${secondaryName ? `<div class="en">${esc(secondaryName)}</div>` : ""}
-        ${badgeHtml ? `<div class="badges">${badgeHtml}</div>` : ""}
       </td>
       <td>${typeTags}</td>
       <td><span class="worktag">${esc(role)}</span></td>
@@ -1412,7 +1798,7 @@
       <td class="num" data-col="speed"><span class="spval">×${work.speed.toFixed(2)}</span></td>
       <td class="num" data-col="prod">${prod}</td>
       <td class="num" data-col="range">${showRange ? fmtRange(work.range, station.mode) : noneText}</td>
-      <td class="num" data-col="score"><b>${work.score.toFixed(2)}</b></td>
+      <td class="num" data-col="score"><b>${work.score.toFixed(2)}</b>${hasBonus ? `<div class="hint2">+${gainPct.toFixed(1)}%</div>` : ""}</td>
     </tr>`;
     if (expanded) {
       html += `<tr class="expandrow"><td colspan="${currentColCount}">${calcHtml(row)}</td></tr>`;
@@ -1570,10 +1956,17 @@
     document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
       el.placeholder = t(el.dataset.i18nPlaceholder);
     });
+    document.querySelectorAll("[data-i18n-title]").forEach((el) => {
+      const text = t(el.dataset.i18nTitle);
+      el.title = text;
+      el.setAttribute("aria-label", text);
+    });
     const langSelect = $("lang");
     if (langSelect) langSelect.setAttribute("aria-label", t("ssc_bw.lang.label"));
-    const formSelect = $("formCategory");
-    if (formSelect) formSelect.setAttribute("aria-label", t("ssc_bw.formCategory.label"));
+    const textSizeGroup = $("textSize");
+    if (textSizeGroup) textSizeGroup.setAttribute("aria-label", t("ssc_bw.textSize.label"));
+    const formChips = $("formChips");
+    if (formChips) formChips.setAttribute("aria-label", t("ssc_bw.formCategory.label"));
     updateThemeButton();
   }
 
@@ -1595,13 +1988,21 @@
     applyStaticText();
     buildTabs();
     buildNatureOptions();
-    buildFormCategoryOptions();
+    buildFormChips();
+    buildSpecialTypeChips();
+    buildBonusOptions();
     updateMeta();
     render();
   }
 
   function bind() {
     $("lang").addEventListener("change", (e) => setLang(e.target.value));
+    $("textSize").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-text-size]");
+      if (!btn) return;
+      applyTextSize(btn.dataset.textSize);
+      render();
+    });
     $("themeToggle").addEventListener("click", () => applyTheme(THEME === "dark" ? "light" : "dark"));
     $("q").addEventListener("input", (e) => { state.q = e.target.value.trim(); render(true); });
     $("level").addEventListener("change", (e) => { state.level = clampInt(e.target.value, 1, 100, 100); render(); });
@@ -1609,6 +2010,8 @@
     $("ev").addEventListener("change", (e) => { state.ev = clampInt(e.target.value, 0, 252, 0); render(); });
     $("nature").addEventListener("change", (e) => { state.nature = e.target.value; render(); });
     $("shiny").addEventListener("change", (e) => { state.shiny = e.target.checked; render(); });
+    $("battery").addEventListener("change", (e) => { state.battery = e.target.value; render(); });
+    $("gem").addEventListener("change", (e) => { state.gem = e.target.value; render(); });
 
     $("typeChips").addEventListener("click", (e) => {
       const btn = e.target.closest("button[data-type]");
@@ -1638,27 +2041,74 @@
     });
 
     $("formsChip").addEventListener("click", () => {
-      state.includeForms = !state.includeForms;
+      const hasForms = Boolean(state.formOnly) || state.formCategories.length > 0;
+      if (hasForms) {
+        state.formOnly = "";
+        state.formCategories = [];
+      } else {
+        state.formOnly = "";
+        state.formCategories = [...FORM_CHIP_CATEGORIES];
+      }
       render();
     });
-    $("formCategory").addEventListener("change", (e) => {
-      state.formCategory = e.target.value;
-      render();
-    });
-    document.querySelectorAll("[data-show]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const id = btn.dataset.show;
-        state.shows = state.shows.includes(id)
-          ? state.shows.filter((x) => x !== id)
-          : [...state.shows, id];
+    $("formChips").addEventListener("click", (e) => {
+      const soloBtn = e.target.closest("button[data-form-solo]");
+      if (soloBtn) {
+        const category = soloBtn.dataset.formSolo;
+        if (state.formOnly === category) {
+          state.formOnly = "";
+          state.formCategories = [category];
+        } else {
+          state.formOnly = category;
+          state.formCategories = [category];
+        }
         render();
-      });
+        return;
+      }
+      const btn = e.target.closest("button[data-form-cat]");
+      if (!btn) return;
+      const category = btn.dataset.formCat;
+      state.formOnly = "";
+      const next = state.formCategories.includes(category)
+        ? state.formCategories.filter((c) => c !== category)
+        : [...state.formCategories, category];
+      state.formCategories = FORM_CHIP_CATEGORIES.filter((c) => next.includes(c));
+      render();
+    });
+    $("specialTypesChip").addEventListener("click", () => {
+      state.shows = state.shows.length ? [] : [...ALL_SHOWS];
+      if (!state.shows.length) state.specialOnly = false;
+      render();
+    });
+    $("specialTypeChips").addEventListener("click", (e) => {
+      const onlyBtn = e.target.closest("button[data-show-only]");
+      if (onlyBtn) {
+        const id = onlyBtn.dataset.showOnly;
+        if (state.specialOnly && state.shows.length === 1 && state.shows[0] === id) {
+          state.specialOnly = false;
+        } else {
+          state.shows = [id];
+          state.specialOnly = true;
+        }
+        render();
+        return;
+      }
+      const btn = e.target.closest("button[data-show]");
+      if (!btn) return;
+      const id = btn.dataset.show;
+      state.shows = state.shows.includes(id)
+        ? state.shows.filter((x) => x !== id)
+        : [...state.shows, id];
+      if (!state.shows.length) state.specialOnly = false;
+      render();
     });
 
     $("reset").addEventListener("click", () => {
       Object.assign(state, DEFAULTS);
       state.types = [];
       state.works = [];
+      state.textSize = document.documentElement.dataset.textSize || "md";
+      state.formCategories = [...DEFAULTS.formCategories];
       state.shows = [...ALL_SHOWS];
       cachedScrollTop = 0;
       tableWrapEl.scrollTop = 0;
@@ -1713,10 +2163,13 @@
   buildLangOptions();
   buildTabs();
   buildNatureOptions();
-  buildFormCategoryOptions();
+  buildFormChips();
+  buildSpecialTypeChips();
+  buildBonusOptions();
   readUrl();
   bind();
   applyStaticText();
+  applyTextSize(state.textSize, false);
   updateMeta();
   $("lang").value = LANG;
   render();
