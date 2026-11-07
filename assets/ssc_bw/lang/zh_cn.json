@@ -303,5 +303,6 @@
   "ssc_bw.import.modCount": "{count} 个模组",
   "ssc_bw.import.loaded": "已读取",
   "ssc_bw.import.errorUnsupportedVersion": "当前网站只支持 {supported}。你选择的整合包是 {version}。",
-  "ssc_bw.footer.issues": "GitHub Issues"
+  "ssc_bw.footer.issues": "GitHub Issues",
+  "ssc_bw.footer.ingame": "一切以游戏内实际内容为准，请勿盲目依赖本站数据。"
 }

@@ -303,5 +303,6 @@
   "ssc_bw.import.modCount": "{count} mods",
   "ssc_bw.import.loaded": "Loaded",
   "ssc_bw.import.errorUnsupportedVersion": "This site currently supports only {supported}. The selected pack is {version}.",
-  "ssc_bw.footer.issues": "GitHub Issues"
+  "ssc_bw.footer.issues": "GitHub Issues",
+  "ssc_bw.footer.ingame": "All information is subject to actual in-game content. Please do not rely blindly on this site's data."
 }

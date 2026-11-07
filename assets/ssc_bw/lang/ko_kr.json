@@ -303,5 +303,6 @@
   "ssc_bw.import.modCount": "{count}개 모드",
   "ssc_bw.import.loaded": "읽음",
   "ssc_bw.import.errorUnsupportedVersion": "현재 사이트는 {supported}만 지원합니다. 선택한 모드팩은 {version}입니다.",
-  "ssc_bw.footer.issues": "GitHub Issues"
+  "ssc_bw.footer.issues": "GitHub Issues",
+  "ssc_bw.footer.ingame": "모든 정보는 게임 내 실제 내용을 기준으로 하며, 이 사이트의 데이터에 맹목적으로 의존하지 마세요."
 }
