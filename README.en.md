@@ -14,7 +14,7 @@ Pure static HTML with no backend or database. Player data is parsed and stored l
 
 ## Features
 
-- Find the best workers for the Craft Station, Gardening Station, Mystery Mine, Crystal Ball, and Energy Pylon
+- Find the best Pokémon for the Craft Station, Gardening Station, Mystery Mine, Crystal Ball, and Energy Pylon
 - Filter by Pokémon Type, Actual Role, and Recipe Type
 - Simulate Level, Individual Value (IV), Effort Value (EV), Nature, and Shiny
 - Score, Speed Multiplier, Expected Yield, Range, and training advice
