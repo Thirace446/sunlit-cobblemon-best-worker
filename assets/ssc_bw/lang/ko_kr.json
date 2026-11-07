@@ -69,8 +69,8 @@
   "ssc_bw.theme.switchToDark": "다크 테마로 전환",
   "ssc_bw.theme.switchToLight": "라이트 테마로 전환",
   "ssc_bw.footer.about": "사이트 안내",
-  "ssc_bw.footer.unofficial": "이 사이트는 비공식 팬 제작 도구입니다. 관련 모드팩 및 모드 커뮤니티에 문제를 제보하지 마세요.",
-  "ssc_bw.footer.disclaimer": "모든 스크립트 알고리즘은 공개된 모드팩 데이터를 기반으로 합니다. 이 사이트는 게임 파일을 호스팅하거나 배포하지 않으며, 다운로드 링크는 CurseForge를 가리킵니다.",
+  "ssc_bw.footer.unofficial": "Society: Sunlit Cobblemon을 위한 팬 제작 워크스테이션 조회 도구로, 각 포켓몬이 다섯 워크스테이션에서 얼마나 잘 작업하는지 비교합니다.",
+  "ssc_bw.footer.disclaimer": "데이터는 플레이어가 로컬에서 가져온 모드팩 파일에서 제공되며, 이 사이트는 게임 파일을 호스팅하거나 배포하지 않습니다.",
   "ssc_bw.footer.feedback": "피드백: ",
   "ssc_bw.nature.hardy": "노력",
   "ssc_bw.nature.lonely": "외로움",
@@ -296,5 +296,5 @@
   "ssc_bw.import.modCount": "{count}개 모드",
   "ssc_bw.import.loaded": "읽음",
   "ssc_bw.import.errorUnsupportedVersion": "현재 사이트는 {supported}만 지원합니다. 선택한 모드팩은 {version}입니다.",
-  "ssc_bw.footer.ingame": "모든 정보는 게임 내 실제 내용을 기준으로 하며, 이 사이트의 데이터에 맹목적으로 의존하지 마세요."
+  "ssc_bw.footer.ingame": "모든 스크립트 알고리즘은 공개된 모드팩 데이터를 기반으로 하며, 모든 정보는 게임 내 실제 내용을 기준으로 합니다."
 }

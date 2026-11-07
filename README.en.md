@@ -65,8 +65,8 @@ Deploy the site as static files on GitHub Pages. No build command or GitHub Acti
 
 ## Notice
 
-This is an unofficial fan-made tool. Please do not report issues in the communities of the related modpack or mods.  
-All script algorithms are based on publicly available modpack data.  
-This site does not host or distribute game files; download links point to CurseForge.
+A fan-made workstation lookup tool for Society: Sunlit Cobblemon, comparing how each Pokémon performs at the five workstations.  
+Data comes from the modpack files players import locally; this site does not host or distribute game files.  
+All script algorithms are based on publicly available modpack data. All information is subject to actual in-game content.
 
 Feedback: [GitHub Issues](https://github.com/Thirace446/sunlit-cobblemon-best-worker/issues)

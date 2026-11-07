@@ -31,9 +31,9 @@
 - 项目统一命名为 **Sunlit Cobblemon · Best Worker**；仓库名/包名为 `sunlit-cobblemon-best-worker`，发布包名同步调整。
 - 内部命名空间、翻译键、`localStorage` 键、全局变量和语言文件目录统一改为 `ssc_bw`。
 - `README.md` 精简为中文 GitHub 首页，新增 `README.en.md` 英文版和语言切换链接；详细使用/部署说明迁移到独立文档，开发辅助文档不进入发布包。
-- README 顶部新增 GitHub Pages 在线使用按钮；中英文 README 的声明统一为“非官方粉丝工具、不向整合包/模组社区提交问题、不托管游戏文件”。
+- README 顶部新增 GitHub Pages 在线使用按钮；中英文 README 的声明统一为“站点用途、本地数据导入、不托管游戏文件、以游戏内实际内容为准”。
 - 发布包同步包含中英文 README，不包含开发辅助文档。
-- 页脚“关于本站”与 README 声明保持一致，移除数据来源和感谢名单，补充“一切以游戏内实际内容为准”的提示，问题反馈保留 GitHub Issues 链接。
+- 页脚“关于本站”采用方案 4：介绍站点用途、本地数据导入、算法来源和游戏内实际内容提示；移除数据来源和感谢名单，问题反馈保留 GitHub Issues 链接，并同步更新中英文 README 声明。
 
 ### Fixed
 

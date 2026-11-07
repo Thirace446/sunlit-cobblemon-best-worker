@@ -65,8 +65,8 @@ http://localhost:4173/
 
 ## 声明
 
-本站是非官方粉丝工具，请不要在相关整合包和模组的社区提交问题。  
-所有脚本的算法来自整合包公开数据。  
-本站不托管、不分发游戏文件；下载链接则指向 CurseForge。
+本站是 Society: Sunlit Cobblemon 的玩家自制工作站查询工具，用于比较各宝可梦在五个工作站的表现。  
+数据来自玩家本地导入的整合包文件；本站不托管、不分发游戏文件。  
+所有脚本算法来自整合包公开数据，一切以游戏内实际内容为准。
 
 问题反馈：[GitHub Issues](https://github.com/Thirace446/sunlit-cobblemon-best-worker/issues)

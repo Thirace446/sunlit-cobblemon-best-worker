@@ -69,8 +69,8 @@
   "ssc_bw.theme.switchToDark": "Switch to dark theme",
   "ssc_bw.theme.switchToLight": "Switch to light theme",
   "ssc_bw.footer.about": "About this site",
-  "ssc_bw.footer.unofficial": "This is an unofficial fan-made tool. Please do not report issues in the communities of the related modpack or mods.",
-  "ssc_bw.footer.disclaimer": "All script algorithms are based on publicly available modpack data. This site does not host or distribute game files; download links point to CurseForge.",
+  "ssc_bw.footer.unofficial": "A fan-made workstation lookup tool for Society: Sunlit Cobblemon, comparing how each Pokémon performs at the five workstations.",
+  "ssc_bw.footer.disclaimer": "Data comes from the modpack files players import locally; this site does not host or distribute game files.",
   "ssc_bw.footer.feedback": "Feedback: ",
   "ssc_bw.nature.hardy": "Hardy",
   "ssc_bw.nature.lonely": "Lonely",
@@ -296,5 +296,5 @@
   "ssc_bw.import.modCount": "{count} mods",
   "ssc_bw.import.loaded": "Loaded",
   "ssc_bw.import.errorUnsupportedVersion": "This site currently supports only {supported}. The selected pack is {version}.",
-  "ssc_bw.footer.ingame": "All information is subject to actual in-game content. Please do not rely blindly on this site's data."
+  "ssc_bw.footer.ingame": "All script algorithms are based on publicly available modpack data. All information is subject to actual in-game content."
 }

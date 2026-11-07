@@ -69,8 +69,8 @@
   "ssc_bw.theme.switchToDark": "切换到暗色主题",
   "ssc_bw.theme.switchToLight": "切换到亮色主题",
   "ssc_bw.footer.about": "关于本站",
-  "ssc_bw.footer.unofficial": "本站是非官方粉丝工具，请不要在相关整合包和模组的社区提交问题。",
-  "ssc_bw.footer.disclaimer": "所有脚本的算法来自整合包公开数据。本站不托管、不分发游戏文件；下载链接则指向 CurseForge。",
+  "ssc_bw.footer.unofficial": "本站是 Society: Sunlit Cobblemon 的玩家自制工作站查询工具，用于比较各宝可梦在五个工作站的表现。",
+  "ssc_bw.footer.disclaimer": "数据来自玩家本地导入的整合包文件；本站不托管、不分发游戏文件。",
   "ssc_bw.footer.feedback": "问题反馈：",
   "ssc_bw.nature.hardy": "勤奋",
   "ssc_bw.nature.lonely": "孤僻",
@@ -296,5 +296,5 @@
   "ssc_bw.import.modCount": "{count} 个模组",
   "ssc_bw.import.loaded": "已读取",
   "ssc_bw.import.errorUnsupportedVersion": "当前网站只支持 {supported}。你选择的整合包是 {version}。",
-  "ssc_bw.footer.ingame": "一切以游戏内实际内容为准，请勿盲目依赖本站数据。"
+  "ssc_bw.footer.ingame": "所有脚本算法来自整合包公开数据，一切以游戏内实际内容为准。"
 }
