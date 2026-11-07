@@ -106,11 +106,10 @@
   </div>
 
   <section class="card mobile-warning" id="mobileWarning" hidden>
-    <h2 data-i18n="ssc_bw.import.mobileTitle">建议使用电脑导入</h2>
-    <p class="muted" data-i18n="ssc_bw.import.mobileBody">导入需要下载并解析约 150 MB 的文件，手机浏览器可能无法完成，下载链接也可能被当作文本打开。请在电脑上打开本页完成首次导入。</p>
+    <h2 data-i18n="ssc_bw.import.mobileTitle">移动端不支持导入</h2>
+    <p class="muted" data-i18n="ssc_bw.import.mobileBody">移动端不支持导入整合包数据，请使用电脑打开本页。</p>
     <div class="actions">
-      <button class="primary" id="mobileContinue" type="button" data-i18n="ssc_bw.import.mobileContinue">仍然尝试</button>
-      <button id="mobileCopy" type="button" data-i18n="ssc_bw.import.mobileCopy">复制当前链接</button>
+      <button class="primary" id="mobileCopy" type="button" data-i18n="ssc_bw.import.mobileCopy">复制当前链接</button>
     </div>
     <p class="muted" id="mobileCopyStatus"></p>
   </section>
@@ -324,17 +323,8 @@
 
   function setupMobileWarning() {
     if (!isMobileDevice()) return;
-    let continued = false;
-    try { continued = sessionStorage.getItem("sunlit.mobileContinue") === "1"; } catch (_) {}
-    if (continued) return;
     $("mobileWarning").hidden = false;
     document.body.classList.add("mobile-gated");
-  }
-
-  function continueOnMobile() {
-    document.body.classList.remove("mobile-gated");
-    $("mobileWarning").hidden = true;
-    try { sessionStorage.setItem("sunlit.mobileContinue", "1"); } catch (_) {}
   }
 
   async function copyCurrentLink() {
@@ -618,7 +608,6 @@
   }
 
   $("lang").addEventListener("change", (event) => setLang(event.target.value));
-  $("mobileContinue").addEventListener("click", continueOnMobile);
   $("mobileCopy").addEventListener("click", copyCurrentLink);
   $("downloadMods").addEventListener("click", downloadMods);
   $("parseBtn").addEventListener("click", parseAndImport);

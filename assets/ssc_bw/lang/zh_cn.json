@@ -297,9 +297,8 @@
   "ssc_bw.import.loaded": "已读取",
   "ssc_bw.import.errorUnsupportedVersion": "当前网站只支持 {supported}。你选择的整合包是 {version}。",
   "ssc_bw.footer.ingame": "所有脚本算法来自整合包公开数据，一切以游戏内实际内容为准。",
-  "ssc_bw.import.mobileTitle": "建议使用电脑导入",
-  "ssc_bw.import.mobileBody": "导入需要下载并解析约 150 MB 的文件，手机浏览器可能无法完成，下载链接也可能被当作文本打开。请在电脑上打开本页完成首次导入。",
-  "ssc_bw.import.mobileContinue": "仍然尝试",
+  "ssc_bw.import.mobileTitle": "移动端不支持导入",
+  "ssc_bw.import.mobileBody": "移动端不支持导入整合包数据，请使用电脑打开本页。",
   "ssc_bw.import.mobileCopy": "复制当前链接",
   "ssc_bw.import.mobileCopied": "链接已复制",
   "ssc_bw.import.mobileCopyFailed": "无法自动复制，请手动复制地址栏链接。"

@@ -39,7 +39,7 @@ Pure static HTML with no backend or database. Player data is parsed and stored l
 
 Imported data is stored in the current browser's `localStorage`. Closing the page does not reset it; switching browsers or devices, or clearing site data, requires importing again.
 
-The first import is best done on a desktop computer. Mobile browsers may not be able to download and parse the roughly 150 MB of files; mobile users can view already-imported data, but the import page shows a desktop recommendation.
+The first import must be done on a desktop computer. Importing modpack data is not supported on mobile, and the import page will show a desktop notice.
 
 ## Local development
 

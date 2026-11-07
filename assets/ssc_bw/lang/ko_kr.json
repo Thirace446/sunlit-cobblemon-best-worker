@@ -297,9 +297,8 @@
   "ssc_bw.import.loaded": "읽음",
   "ssc_bw.import.errorUnsupportedVersion": "현재 사이트는 {supported}만 지원합니다. 선택한 모드팩은 {version}입니다.",
   "ssc_bw.footer.ingame": "모든 스크립트 알고리즘은 공개된 모드팩 데이터를 기반으로 하며, 모든 정보는 게임 내 실제 내용을 기준으로 합니다.",
-  "ssc_bw.import.mobileTitle": "가져오기는 PC 사용을 권장합니다",
-  "ssc_bw.import.mobileBody": "가져오려면 약 150 MB의 파일을 다운로드하고 처리해야 합니다. 모바일 브라우저에서는 완료하지 못할 수 있으며, 다운로드 링크가 텍스트로 열릴 수 있습니다. 첫 가져오기는 컴퓨터에서 이 페이지를 열어 주세요.",
-  "ssc_bw.import.mobileContinue": "그래도 계속",
+  "ssc_bw.import.mobileTitle": "모바일 가져오기 미지원",
+  "ssc_bw.import.mobileBody": "모바일에서는 모드팩 데이터 가져오기를 지원하지 않습니다. 컴퓨터에서 이 페이지를 열어 주세요.",
   "ssc_bw.import.mobileCopy": "현재 링크 복사",
   "ssc_bw.import.mobileCopied": "링크를 복사했습니다",
   "ssc_bw.import.mobileCopyFailed": "자동으로 복사하지 못했습니다. 주소 표시줄의 링크를 직접 복사하세요."
