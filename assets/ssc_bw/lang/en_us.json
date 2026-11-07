@@ -296,5 +296,11 @@
   "ssc_bw.import.modCount": "{count} mods",
   "ssc_bw.import.loaded": "Loaded",
   "ssc_bw.import.errorUnsupportedVersion": "This site currently supports only {supported}. The selected pack is {version}.",
-  "ssc_bw.footer.ingame": "All script algorithms are based on publicly available modpack data. All information is subject to actual in-game content."
+  "ssc_bw.footer.ingame": "All script algorithms are based on publicly available modpack data. All information is subject to actual in-game content.",
+  "ssc_bw.import.mobileTitle": "Desktop recommended for import",
+  "ssc_bw.import.mobileBody": "Importing requires downloading and parsing about 150 MB of files. Mobile browsers may not be able to finish, and download links may open as text instead of downloading. Please open this page on a computer for the first import.",
+  "ssc_bw.import.mobileContinue": "Continue anyway",
+  "ssc_bw.import.mobileCopy": "Copy current link",
+  "ssc_bw.import.mobileCopied": "Link copied",
+  "ssc_bw.import.mobileCopyFailed": "Could not copy automatically. Please copy the address bar URL."
 }

@@ -30,6 +30,8 @@
     .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;margin:14px 0}
     .notice{background:var(--warn-soft);border:1px solid var(--warn-border);color:var(--text-2);border-radius:8px;padding:12px 14px;font-size:12.5px;line-height:1.7}
     .notice b{color:var(--text)}
+    body.mobile-gated .import-card{display:none}
+    .mobile-warning .actions{margin-top:14px}
     h2{font-size:14px;margin:0 0 10px}
     .row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
     label{color:var(--muted);font-size:12px;font-weight:500}
@@ -103,7 +105,17 @@
     <span data-i18n="ssc_bw.import.notice.body">所有下载链接都指向 CurseForge 官方 CDN；本站只提供查询页面和本地解析脚本。</span>
   </div>
 
-  <div class="card">
+  <section class="card mobile-warning" id="mobileWarning" hidden>
+    <h2 data-i18n="ssc_bw.import.mobileTitle">建议使用电脑导入</h2>
+    <p class="muted" data-i18n="ssc_bw.import.mobileBody">导入需要下载并解析约 150 MB 的文件，手机浏览器可能无法完成，下载链接也可能被当作文本打开。请在电脑上打开本页完成首次导入。</p>
+    <div class="actions">
+      <button class="primary" id="mobileContinue" type="button" data-i18n="ssc_bw.import.mobileContinue">仍然尝试</button>
+      <button id="mobileCopy" type="button" data-i18n="ssc_bw.import.mobileCopy">复制当前链接</button>
+    </div>
+    <p class="muted" id="mobileCopyStatus"></p>
+  </section>
+
+  <div class="card import-card">
     <h2 data-i18n="ssc_bw.import.step1">1. 选择整合包版本并下载</h2>
     <div class="row">
       <label data-i18n="ssc_bw.import.version">整合包版本</label>
@@ -123,7 +135,7 @@
     <div class="files" id="packFiles"></div>
   </div>
 
-  <div class="card">
+  <div class="card import-card">
     <h2 data-i18n="ssc_bw.import.step2">2. 下载并导入两个模组 jar</h2>
     <div class="muted" id="modHint" data-i18n="ssc_bw.import.modHintInitial">先导入整合包 zip，页面会从 manifest.json 读取需要的两个模组版本。</div>
     <div class="files" id="modLinks"></div>
@@ -138,7 +150,7 @@
     <div class="files" id="jarFiles"></div>
   </div>
 
-  <div class="card">
+  <div class="card import-card">
     <h2 data-i18n="ssc_bw.import.step3">3. 解析并进入站点</h2>
     <div class="status" id="status" data-i18n="ssc_bw.import.statusWaiting">等待导入文件…</div>
     <div class="actions">
@@ -291,12 +303,47 @@
     return String(text).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   }
 
+  function isMobileDevice() {
+    return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) ||
+      (navigator.maxTouchPoints > 1 && window.innerWidth < 900);
+  }
+
   function setupFixedPack() {
     $("versionLabel").textContent = SUPPORTED_PACK_VERSION;
-    $("downloadPack").href = FIXED_PACK.downloadUrl;
-    $("downloadPack").setAttribute("download", FIXED_PACK.name);
+    if (isMobileDevice()) {
+      // Direct CDN zip links may open as binary text on some mobile browsers.
+      $("downloadPack").href = FIXED_PACK.pageUrl;
+      $("downloadPack").removeAttribute("download");
+    } else {
+      $("downloadPack").href = FIXED_PACK.downloadUrl;
+      $("downloadPack").setAttribute("download", FIXED_PACK.name);
+    }
     $("openPackPage").href = FIXED_PACK.pageUrl;
     $("packSize").textContent = formatBytes(FIXED_PACK.filesize);
+  }
+
+  function setupMobileWarning() {
+    if (!isMobileDevice()) return;
+    let continued = false;
+    try { continued = sessionStorage.getItem("sunlit.mobileContinue") === "1"; } catch (_) {}
+    if (continued) return;
+    $("mobileWarning").hidden = false;
+    document.body.classList.add("mobile-gated");
+  }
+
+  function continueOnMobile() {
+    document.body.classList.remove("mobile-gated");
+    $("mobileWarning").hidden = true;
+    try { sessionStorage.setItem("sunlit.mobileContinue", "1"); } catch (_) {}
+  }
+
+  async function copyCurrentLink() {
+    try {
+      await navigator.clipboard.writeText(location.href);
+      $("mobileCopyStatus").textContent = t("ssc_bw.import.mobileCopied");
+    } catch (_) {
+      $("mobileCopyStatus").textContent = t("ssc_bw.import.mobileCopyFailed");
+    }
   }
 
   function renderPackFile() {
@@ -571,6 +618,8 @@
   }
 
   $("lang").addEventListener("change", (event) => setLang(event.target.value));
+  $("mobileContinue").addEventListener("click", continueOnMobile);
+  $("mobileCopy").addEventListener("click", copyCurrentLink);
   $("downloadMods").addEventListener("click", downloadMods);
   $("parseBtn").addEventListener("click", parseAndImport);
   $("clearBtn").addEventListener("click", clearImported);
@@ -580,6 +629,7 @@
   buildLangOptions();
   applyI18n();
   setupFixedPack();
+  setupMobileWarning();
   renderExistingImport();
   updateParseButton();
   updateDownloadModsButton();
