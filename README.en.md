@@ -68,3 +68,5 @@ Deploy the site as static files on GitHub Pages. No build command or GitHub Acti
 This is an unofficial fan-made tool. Please do not report issues in the communities of the related modpack or mods.  
 All script algorithms are based on publicly available modpack data.  
 This site does not host or distribute game files; download links point to CurseForge.
+
+Feedback: [GitHub Issues](https://github.com/Thirace446/sunlit-cobblemon-best-worker/issues)

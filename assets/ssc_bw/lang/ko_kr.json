@@ -69,8 +69,8 @@
   "ssc_bw.theme.switchToDark": "다크 테마로 전환",
   "ssc_bw.theme.switchToLight": "라이트 테마로 전환",
   "ssc_bw.footer.about": "사이트 안내",
-  "ssc_bw.footer.unofficial": "비공식 팬 제작 조회 도구입니다.",
-  "ssc_bw.footer.disclaimer": "모든 정보는 게임 내 실제 내용을 기준으로 하며, 본 사이트 데이터에 맹목적으로 의존하지 마세요.",
+  "ssc_bw.footer.unofficial": "이 사이트는 비공식 팬 제작 도구입니다. 관련 모드팩 및 모드 커뮤니티에 문제를 제보하지 마세요.",
+  "ssc_bw.footer.disclaimer": "모든 스크립트 알고리즘은 공개된 모드팩 데이터를 기반으로 합니다. 이 사이트는 게임 파일을 호스팅하거나 배포하지 않으며, 다운로드 링크는 CurseForge를 가리킵니다.",
   "ssc_bw.footer.sourcesPrefix": "데이터 출처: ",
   "ssc_bw.footer.sourceSunlit": "Sunlit Cobblemon",
   "ssc_bw.footer.sourceSunlitDetail": "(워크스테이션 모드, 사용자 지정 레시피 데이터, 일부 언어 파일 포함)",
@@ -78,7 +78,7 @@
   "ssc_bw.footer.sourceCobblemon": "Cobblemon",
   "ssc_bw.footer.sourceCobblemonDetail": "(포켓몬 능력치 데이터)",
   "ssc_bw.footer.thanks": "감사 목록: 모든 분들",
-  "ssc_bw.footer.feedback": "피드백: GitHub",
+  "ssc_bw.footer.feedback": "피드백: ",
   "ssc_bw.nature.hardy": "노력",
   "ssc_bw.nature.lonely": "외로움",
   "ssc_bw.nature.brave": "용감",
@@ -302,5 +302,6 @@
   "ssc_bw.import.errorQuota": "브라우저 저장 공간이 부족합니다. 사이트 데이터를 지우고 다시 시도하세요.",
   "ssc_bw.import.modCount": "{count}개 모드",
   "ssc_bw.import.loaded": "읽음",
-  "ssc_bw.import.errorUnsupportedVersion": "현재 사이트는 {supported}만 지원합니다. 선택한 모드팩은 {version}입니다."
+  "ssc_bw.import.errorUnsupportedVersion": "현재 사이트는 {supported}만 지원합니다. 선택한 모드팩은 {version}입니다.",
+  "ssc_bw.footer.issues": "GitHub Issues"
 }

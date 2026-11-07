@@ -69,8 +69,8 @@
   "ssc_bw.theme.switchToDark": "切换到暗色主题",
   "ssc_bw.theme.switchToLight": "切换到亮色主题",
   "ssc_bw.footer.about": "关于本站",
-  "ssc_bw.footer.unofficial": "本站为玩家自制非官方查询工具。",
-  "ssc_bw.footer.disclaimer": "一切以游戏内实际内容为准，请勿盲目依赖本站数据。",
+  "ssc_bw.footer.unofficial": "本站是非官方粉丝工具，请不要在相关整合包和模组的社区提交问题。",
+  "ssc_bw.footer.disclaimer": "所有脚本的算法来自整合包公开数据。本站不托管、不分发游戏文件；下载链接则指向 CurseForge。",
   "ssc_bw.footer.sourcesPrefix": "数据来源：",
   "ssc_bw.footer.sourceSunlit": "Sunlit Cobblemon",
   "ssc_bw.footer.sourceSunlitDetail": "(包括工作站模组和自定义配方数据以及部分语言文件)",
@@ -78,7 +78,7 @@
   "ssc_bw.footer.sourceCobblemon": "Cobblemon",
   "ssc_bw.footer.sourceCobblemonDetail": "(宝可梦能力值数据)",
   "ssc_bw.footer.thanks": "感谢名单：任何人",
-  "ssc_bw.footer.feedback": "问题反馈：Github",
+  "ssc_bw.footer.feedback": "问题反馈：",
   "ssc_bw.nature.hardy": "勤奋",
   "ssc_bw.nature.lonely": "孤僻",
   "ssc_bw.nature.brave": "勇敢",
@@ -302,5 +302,6 @@
   "ssc_bw.import.errorQuota": "浏览器本地存储空间不足。请清理本站点数据或其他网站数据后重试。",
   "ssc_bw.import.modCount": "{count} 个模组",
   "ssc_bw.import.loaded": "已读取",
-  "ssc_bw.import.errorUnsupportedVersion": "当前网站只支持 {supported}。你选择的整合包是 {version}。"
+  "ssc_bw.import.errorUnsupportedVersion": "当前网站只支持 {supported}。你选择的整合包是 {version}。",
+  "ssc_bw.footer.issues": "GitHub Issues"
 }

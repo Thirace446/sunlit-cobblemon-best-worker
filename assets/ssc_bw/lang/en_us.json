@@ -69,8 +69,8 @@
   "ssc_bw.theme.switchToDark": "Switch to dark theme",
   "ssc_bw.theme.switchToLight": "Switch to light theme",
   "ssc_bw.footer.about": "About this site",
-  "ssc_bw.footer.unofficial": "An unofficial, fan-made lookup tool.",
-  "ssc_bw.footer.disclaimer": "All information is subject to actual in-game content. Please do not rely blindly on this site's data.",
+  "ssc_bw.footer.unofficial": "This is an unofficial fan-made tool. Please do not report issues in the communities of the related modpack or mods.",
+  "ssc_bw.footer.disclaimer": "All script algorithms are based on publicly available modpack data. This site does not host or distribute game files; download links point to CurseForge.",
   "ssc_bw.footer.sourcesPrefix": "Data sources: ",
   "ssc_bw.footer.sourceSunlit": "Sunlit Cobblemon",
   "ssc_bw.footer.sourceSunlitDetail": " (includes the workstation mod, custom recipe data, and some language files)",
@@ -78,7 +78,7 @@
   "ssc_bw.footer.sourceCobblemon": "Cobblemon",
   "ssc_bw.footer.sourceCobblemonDetail": " (Pokémon stat data)",
   "ssc_bw.footer.thanks": "Thanks to everyone.",
-  "ssc_bw.footer.feedback": "Feedback: GitHub",
+  "ssc_bw.footer.feedback": "Feedback: ",
   "ssc_bw.nature.hardy": "Hardy",
   "ssc_bw.nature.lonely": "Lonely",
   "ssc_bw.nature.brave": "Brave",
@@ -302,5 +302,6 @@
   "ssc_bw.import.errorQuota": "Browser storage is full. Clear site data or other site data and try again.",
   "ssc_bw.import.modCount": "{count} mods",
   "ssc_bw.import.loaded": "Loaded",
-  "ssc_bw.import.errorUnsupportedVersion": "This site currently supports only {supported}. The selected pack is {version}."
+  "ssc_bw.import.errorUnsupportedVersion": "This site currently supports only {supported}. The selected pack is {version}.",
+  "ssc_bw.footer.issues": "GitHub Issues"
 }

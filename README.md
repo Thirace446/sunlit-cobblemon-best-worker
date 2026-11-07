@@ -68,3 +68,5 @@ http://localhost:4173/
 本站是非官方粉丝工具，请不要在相关整合包和模组的社区提交问题。  
 所有脚本的算法来自整合包公开数据。  
 本站不托管、不分发游戏文件；下载链接则指向 CurseForge。
+
+问题反馈：[GitHub Issues](https://github.com/Thirace446/sunlit-cobblemon-best-worker/issues)
