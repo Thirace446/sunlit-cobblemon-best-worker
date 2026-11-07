@@ -1,0 +1,12 @@
+{
+  "name": "sunlit-cobblemon-best-worker",
+  "version": "1.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Sunlit Cobblemon · Best Worker 工作站数据查询页",
+  "scripts": {
+    "sync": "node scripts/sync-data.mjs",
+    "lang": "node scripts/build-lang.mjs",
+    "serve": "node scripts/serve.mjs"
+  }
+}

@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sunlit Cobblemon · Best Worker</title>
+<script>
+(function () {
+  let fromUrl = null;
+  let saved = null;
+  try { fromUrl = new URLSearchParams(location.search).get("theme"); } catch (_) {}
+  try { saved = localStorage.getItem("ssc_bw.theme"); } catch (_) {}
+  const systemDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const theme = (fromUrl === "dark" || fromUrl === "light")
+    ? fromUrl
+    : (saved === "dark" || saved === "light" ? saved : (systemDark ? "dark" : "light"));
+  document.documentElement.dataset.theme = theme;
+})();
+</script>
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#f6f7f9; --card:#ffffff; --surface:#ffffff; --surface-2:#f1f3f7; --header:#f8f9fb;
+    --line:#e2e5ec; --line-soft:#eceef3; --border-hover:#cbd1dc;
+    --text:#111827; --text-2:#374151; --muted:#6b7280; --idx:#9ca3af;
+    --accent:#2563eb; --accent-soft:#eff4ff; --accent-border:#bfdbfe; --accent-ink:#1d4ed8;
+    --good:#0f766e; --good-soft:#f0fdfa; --good-border:#99f6e4; --good-ink:#115e59;
+    --warn:#b45309; --warn-soft:#fffbeb; --warn-border:#fde68a; --warn-ink:#92400e;
+    --badge-form-bg:#f1f3f7; --badge-form-fg:#4b5563; --badge-form-border:#e2e5ec;
+    --badge-spec-bg:#fef3c7; --badge-spec-fg:#92400e; --badge-spec-border:#fde68a;
+    --error-bg:#fef2f2; --error-border:#fecaca; --error-fg:#991b1b;
+    --hover:#f8fafc; --row-open:#f3f6ff; --expand:#f8fafc;
+    --shadow-card:0 1px 2px rgba(15,23,42,.04);
+    --shadow-seg:0 1px 2px rgba(15,23,42,.06);
+    --mono:ui-monospace,"SFMono-Regular",Menlo,Monaco,Consolas,monospace;
+  }
+  html[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:#0b0e14; --card:#11161f; --surface:#151b26; --surface-2:#1c2432; --header:#141a24;
+    --line:#232b3a; --line-soft:#1c2331; --border-hover:#334056;
+    --text:#f3f4f6; --text-2:#d1d5db; --muted:#8b95a5; --idx:#647084;
+    --accent:#3b82f6; --accent-soft:#172542; --accent-border:#26437e; --accent-ink:#93c5fd;
+    --good:#2dd4bf; --good-soft:#0f292a; --good-border:#1d4d4f; --good-ink:#99f6e4;
+    --warn:#fbbf24; --warn-soft:#2b2112; --warn-border:#5c4318; --warn-ink:#fde68a;
+    --badge-form-bg:#1c2432; --badge-form-fg:#9ca3af; --badge-form-border:#2a3446;
+    --badge-spec-bg:#292012; --badge-spec-fg:#fcd34d; --badge-spec-border:#523d1a;
+    --error-bg:#2a1414; --error-border:#5c2424; --error-fg:#fca5a5;
+    --hover:#171f2c; --row-open:#152033; --expand:#0e131b;
+    --shadow-card:0 1px 2px rgba(0,0,0,.4);
+    --shadow-seg:0 1px 2px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--text);
+    font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    padding:20px 18px 56px;
+  }
+  .wrap{max-width:none;margin:0 auto}
+  header{position:relative;padding-bottom:2px}
+  header h1{margin:0 0 4px;font-size:20px;font-weight:650;letter-spacing:-.01em}
+  header p{margin:0;color:var(--muted);font-size:13px}
+  header .meta{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:6px;color:var(--muted);font-size:12px}
+  header .meta b{color:var(--text-2);font-weight:600}
+  .header-controls{position:absolute;top:0;right:0;display:flex;align-items:center;gap:8px}
+  .lang-switch{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px}
+  .lang-switch select,.theme-toggle{font:inherit;font-size:12px;color:var(--text-2);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 8px;outline:none}
+  .lang-switch select:focus,.theme-toggle:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+  .theme-toggle{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+  .theme-toggle:hover,.lang-switch select:hover{border-color:var(--border-hover);color:var(--text)}
+  .import-link{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:6px;padding:4px 8px;color:var(--text-2);background:var(--surface);font-size:12px;text-decoration:none}
+  .import-link:hover{border-color:var(--border-hover);color:var(--text)}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:8px;
+    box-shadow:var(--shadow-card);
+  }
+  .tabs{
+    display:inline-flex;flex-wrap:wrap;gap:2px;margin:14px 0 0;
+    padding:3px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;
+  }
+  .tab{
+    font:inherit;font-size:13px;cursor:pointer;border:1px solid transparent;background:transparent;
+    color:var(--muted);border-radius:6px;padding:5px 13px;font-weight:500;
+    transition:color .12s,background .12s,border-color .12s;
+  }
+  .tab:hover{color:var(--text)}
+  .tab.on{background:var(--card);border-color:var(--line);color:var(--text);font-weight:600;box-shadow:var(--shadow-seg)}
+  .toolbar{margin:10px 0 0;padding:12px 14px;display:flex;flex-direction:column;gap:9px}
+  .row{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center}
+  .row[hidden]{display:none}
+  .row.subrow{padding-left:14px;border-left:2px solid var(--line);margin-left:2px}
+  .row > .lbl,.filters > .lbl{color:var(--muted);font-size:12px;font-weight:500;min-width:64px}
+  .sim-row{gap:8px 16px;padding-top:2px;border-top:1px solid var(--line-soft)}
+  .field{display:inline-flex;align-items:center;gap:6px}
+  .field .lbl{color:var(--muted);font-size:12px;font-weight:500;min-width:auto}
+  .sim-row > .field:first-child{gap:8px}
+  .sim-row > .field:first-child .lbl{min-width:64px}
+  .roleinfo{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;padding-top:1px}
+  .roleinfo b{font-size:12.5px;color:var(--text)}
+  .roleinfo span{font-size:12px;color:var(--muted)}
+  input[type=search],input[type=number],select{
+    font:inherit;font-size:13px;color:var(--text);background:var(--surface);border:1px solid var(--line);
+    border-radius:6px;padding:5px 9px;outline:none;transition:border-color .12s;
+  }
+  input[type=search]:hover,input[type=number]:hover,select:hover{border-color:var(--border-hover)}
+  input[type=search]{flex:1 1 260px;min-width:220px}
+  input[type=number]{width:68px;font-family:var(--mono);font-size:12.5px}
+  input[type=search]:focus,input[type=number]:focus,select:focus{
+    border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)
+  }
+  button.reset{
+    font:inherit;font-size:12.5px;cursor:pointer;background:var(--surface);border:1px solid var(--line);
+    border-radius:6px;padding:5px 12px;color:var(--text-2);font-weight:500;
+  }
+  button.reset:hover{border-color:var(--border-hover);background:var(--hover);color:var(--text)}
+  .check{display:inline-flex;align-items:center;gap:6px;color:var(--text-2);font-size:12.5px;white-space:nowrap;cursor:pointer}
+  .check input{accent-color:var(--accent);margin:0}
+  .chips{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+  .chip{
+    font:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+    background:var(--surface);border:1px solid var(--line);color:var(--text-2);
+    border-radius:6px;padding:3px 9px;font-size:12px;font-weight:500;user-select:none;
+    transition:background .12s,border-color .12s,color .12s;
+  }
+  .chip:hover{background:var(--hover);border-color:var(--border-hover);color:var(--text)}
+  .chip.on{background:var(--accent-soft);border-color:var(--accent-border);color:var(--accent-ink);font-weight:600}
+  .chip .dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex:0 0 auto}
+  .hint2{color:var(--muted);font-size:11.5px}
+  .meta-bar{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin:12px 2px 6px;flex-wrap:wrap}
+  .meta-bar .count{font-weight:600;font-size:13px}
+  .meta-bar .hint{color:var(--muted);font-size:12px}
+  .tablewrap{overflow:auto;max-height:calc(100vh - 250px);border-radius:8px;scrollbar-gutter:stable}
+  .tablecard{border-radius:8px}
+  .tablecard thead th:first-child{border-top-left-radius:7px}
+  .tablecard thead th:last-child{border-top-right-radius:7px}
+  table{border-collapse:separate;border-spacing:0;width:100%;min-width:0}
+  thead th{
+    position:sticky;top:0;z-index:2;background:var(--header);
+    text-align:left;font-size:11.5px;font-weight:600;color:var(--muted);
+    padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap;
+  }
+  thead th.sortable{cursor:pointer;user-select:none}
+  thead th.sortable:hover{color:var(--text)}
+  thead th.num{text-align:right}
+  thead th .arrow{opacity:.22;font-size:9px;margin-left:4px;transition:opacity .12s}
+  thead th.sortable:hover .arrow{opacity:.55}
+  thead th.asc .arrow,thead th.desc .arrow{opacity:1;color:var(--accent)}
+  tbody td{padding:9px 10px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+  tbody tr:hover td{background:var(--hover)}
+  tbody tr:last-child td{border-bottom:none}
+  td.num{text-align:right;font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+  td.idx{color:var(--idx);font-size:12px}
+  th[data-k="rank"],td.idx{min-width:48px}
+  .zh{font-weight:600;white-space:nowrap;color:var(--text)}
+  .en{color:var(--muted);font-size:12px;white-space:nowrap}
+  .badge{
+    display:inline-block;font-size:10.5px;line-height:1;padding:2.5px 5.5px;border-radius:4px;
+    background:var(--warn-soft);color:var(--warn-ink);border:1px solid var(--warn-border);margin-left:6px;
+    vertical-align:1px;white-space:nowrap;font-weight:500;
+  }
+  .badge.form{background:var(--badge-form-bg);color:var(--badge-form-fg);border-color:var(--badge-form-border)}
+  .badge.special{background:var(--badge-spec-bg);color:var(--badge-spec-fg);border-color:var(--badge-spec-border)}
+  .badges{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+  .badges .badge{margin-left:0}
+  .pill{
+    display:inline-block;border-radius:4px;padding:2px 7px;font-size:11px;
+    margin:1px 3px 1px 0;white-space:nowrap;font-weight:600;letter-spacing:.01em;
+  }
+  .worktag{
+    display:inline-block;border-radius:4px;padding:2px 7px;font-size:11.5px;
+    background:var(--surface-2);color:var(--text-2);border:1px solid var(--line-soft);
+    font-weight:500;white-space:nowrap;
+  }
+  .statline{font-family:var(--cell-font, inherit);font-size:12px;color:var(--text-2);white-space:nowrap}
+  .statline .k{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--muted);margin-right:2px}
+  .statline b{font-family:var(--mono);color:var(--text)}
+  .fixed-yield{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--muted);font-size:12px;white-space:nowrap}
+  .spval{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;min-width:44px;text-align:right;color:var(--text)}
+  .empty{padding:48px 12px;text-align:center;color:var(--muted)}
+  .note{margin:10px 2px 0;color:var(--muted);font-size:12px;line-height:1.65}
+  .note b{color:var(--text-2)}
+  .site-footer{margin:24px 2px 0;padding:14px 2px 0;border-top:1px solid var(--line);color:var(--muted);font-size:12px;line-height:1.75}
+  .site-footer h2{margin:0 0 4px;color:var(--text-2);font-size:12px;font-weight:600}
+  .site-footer p{margin:2px 0}
+  .site-footer a{color:var(--accent);text-decoration:none}
+  .site-footer a:hover{text-decoration:underline}
+  .filters{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;padding-top:2px;border-top:1px solid var(--line-soft)}
+  .form-category{max-width:170px;font-size:12px;padding:3px 7px}
+  .error{padding:16px;border:1px solid var(--error-border);background:var(--error-bg);color:var(--error-fg);border-radius:8px;margin-top:14px}
+  [data-col][hidden],
+  table.hide-multStat [data-col="multStat"],
+  table.hide-prod [data-col="prod"],
+  table.hide-range [data-col="range"]{display:none!important}
+  tr.spacer-row td{padding:0!important;border:none!important;background:transparent!important;pointer-events:none}
+  tr.row-main{cursor:pointer}
+  tr.row-main.open td{background:var(--row-open)}
+  tr.row-main.open td:first-child,tr.expandrow td{box-shadow:inset 3px 0 0 var(--accent)}
+  tr.expandrow td{padding:0!important;background:var(--expand);border-bottom:1px solid var(--line)}
+  .calc-wrap{padding:12px 16px 12px 18px}
+  .calc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+  .calc-block{padding:9px 12px;border-right:1px solid var(--line-soft)}
+  .calc-block:last-child{border-right:none}
+  .calc-block h4{margin:0 0 5px;font-size:11.5px;font-weight:600;color:var(--text-2);letter-spacing:.01em}
+  .calc-line{font-size:12px;color:var(--text-2);line-height:1.6;font-variant-numeric:tabular-nums}
+  .calc-line b{color:var(--text)}
+  .calc-meta{margin-top:8px;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:9px 12px;display:flex;flex-direction:column;gap:7px}
+  .calc-rec-bar{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;padding-bottom:6px;border-bottom:1px solid var(--line-soft)}
+  .calc-rec{color:var(--good-ink);background:var(--good-soft);border:1px solid var(--good-border);border-radius:4px;padding:2px 7px;font-size:12px;font-weight:600}
+  .calc-rec-delta{color:var(--text-2);font-size:12px;font-variant-numeric:tabular-nums}
+  .calc-advice{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:4px 16px;font-size:12px;color:var(--text-2);line-height:1.55}
+  .calc-kv b{color:var(--text);font-weight:600}
+  .calc-note{margin-top:6px;color:var(--muted);font-size:11.5px;line-height:1.5}
+  @media (max-width:900px){
+    .calc-grid{grid-template-columns:1fr}
+    .calc-block{border-right:none;border-bottom:1px solid var(--line-soft)}
+    .calc-block:last-child{border-bottom:none}
+  }
+  @media (max-width:640px){
+    body{padding:14px 10px 44px}
+    .toolbar{padding:10px}
+    .meta-bar .hint{display:none}
+    .tablewrap{max-height:none}
+    .header-controls{position:static;margin-top:8px;justify-content:flex-end;flex-wrap:wrap}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="header-controls">
+      <div class="lang-switch">
+        <label for="lang" data-i18n="ssc_bw.lang.label">Language</label>
+        <select id="lang" aria-label="Language"></select>
+      </div>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle theme">
+        <span id="themeIcon" aria-hidden="true">☾</span><span id="themeLabel">Dark</span>
+      </button>
+      <a class="import-link" href="import.html">导入数据</a>
+    </div>
+    <h1 data-i18n="ssc_bw.page.heading">Sunlit Cobblemon · Best Worker</h1>
+    <p data-i18n="ssc_bw.page.subtitle">List every Pokémon that can work at a workstation, sorted and filtered by the station's actual formulas.</p>
+    <div class="meta" id="meta"></div>
+  </header>
+
+  <div class="tabs" id="tabs"></div>
+
+  <section class="card toolbar">
+    <div class="row">
+      <input id="q" type="search" data-i18n-placeholder="ssc_bw.search.placeholder" placeholder="Search English name / species ID… (e.g. Charizard)">
+      <button class="reset" id="reset" data-i18n="ssc_bw.action.reset">Reset filters</button>
+    </div>
+
+    <div class="row" style="align-items:flex-start">
+      <span class="lbl" style="padding-top:4px" data-i18n="ssc_bw.label.pokemonType">Pokémon Type</span>
+      <span class="chips" id="typeChips"></span>
+    </div>
+
+    <div class="row" id="roleRow" style="align-items:flex-start" hidden>
+      <span class="lbl" style="padding-top:2px" data-i18n="ssc_bw.label.role">Actual Role</span>
+      <span class="roleinfo"><b id="roleName"></b><span id="roleDesc"></span></span>
+    </div>
+
+    <div class="row subrow" id="variantRow" style="align-items:flex-start" hidden>
+      <span class="lbl" style="padding-top:4px" data-i18n="ssc_bw.label.recipeType">Recipe Type</span>
+      <span class="chips" id="variantChips"></span>
+    </div>
+
+    <div class="row sim-row">
+      <label class="field"><span class="lbl" data-i18n="ssc_bw.label.level">Level</span><input id="level" type="number" min="1" max="100" value="100"></label>
+      <label class="field"><span class="lbl" data-i18n="ssc_bw.label.iv">Individual Value (IV)</span><input id="iv" type="number" min="0" max="31" value="0"></label>
+      <label class="field"><span class="lbl" data-i18n="ssc_bw.label.ev">Effort Value (EV)</span><input id="ev" type="number" min="0" max="252" step="4" value="0"></label>
+      <label class="field"><span class="lbl" data-i18n="ssc_bw.label.nature">Nature</span><select id="nature"></select></label>
+      <label class="check"><input id="shiny" type="checkbox"> <span data-i18n="ssc_bw.label.shiny">Shiny (speed / yield / range ×2)</span></label>
+    </div>
+
+    <div class="filters">
+      <span class="lbl" data-i18n="ssc_bw.label.show">Show</span>
+      <button type="button" class="chip form" id="formsChip" data-i18n="ssc_bw.chip.specialForms">Special Forms</button>
+      <select id="formCategory" class="form-category" aria-label="Form category"></select>
+      <button type="button" class="chip special" data-show="legendary" data-i18n="ssc_bw.chip.legendary">Legendary</button>
+      <button type="button" class="chip special" data-show="mythical" data-i18n="ssc_bw.chip.mythical">Mythical</button>
+      <button type="button" class="chip special" data-show="ultra" data-i18n="ssc_bw.chip.ultra">Ultra Beast</button>
+      <button type="button" class="chip special" data-show="paradox" data-i18n="ssc_bw.chip.paradox">Paradox</button>
+      <span class="hint2" data-i18n="ssc_bw.hint.defaults">Default calculation: Lv.100 / 0 IV / 0 EV / Hardy (neutral). Not real-time data for your current Pokémon.</span>
+    </div>
+  </section>
+
+  <div class="meta-bar">
+    <span class="count" id="count"></span>
+    <span class="hint" data-i18n="ssc_bw.hint.table">Click a row to view stat zones · Click a header to sort · Score = Speed Multiplier × Expected Yield; Gardening Station uses action speed; Crystal Ball / Energy Pylon use Sp. Atk, range uses HP</span>
+  </div>
+
+  <div class="tablewrap">
+    <div class="card tablecard">
+    <table>
+      <thead>
+        <tr>
+          <th class="num" data-k="rank"><span class="th-label" data-i18n="ssc_bw.table.rank">#</span></th>
+          <th class="sortable" data-k="name"><span class="th-label" data-i18n="ssc_bw.table.pokemon">Pokémon</span><span class="arrow">▼</span></th>
+          <th><span class="th-label" data-i18n="ssc_bw.table.types">Pokémon Type</span></th>
+          <th><span class="th-label" data-i18n="ssc_bw.table.recipeType">Recipe Type</span></th>
+          <th class="num sortable" data-col="speedStat" data-k="speedStat"><span class="th-label" data-i18n="ssc_bw.table.speedStat">Speed Zone (Base Stat / Stat Value)</span><span class="arrow">▼</span></th>
+          <th class="num sortable" data-col="multStat" data-k="multStat"><span class="th-label" data-i18n="ssc_bw.table.multStat">Yield Zone (Base Stat / Stat Value)</span><span class="arrow">▼</span></th>
+          <th class="num sortable" data-col="speed" data-k="speed"><span class="th-label" data-i18n="ssc_bw.table.speed">Speed Multiplier</span><span class="arrow">▼</span></th>
+          <th class="num sortable" data-col="prod" data-k="mult" id="prodHead"><span class="th-label" data-i18n="ssc_bw.table.expectedYield">Expected Yield</span><span class="arrow">▼</span></th>
+          <th class="num sortable" data-col="range" data-k="range"><span class="th-label" data-i18n="ssc_bw.table.range">Range</span><span class="arrow">▼</span></th>
+          <th class="num sortable" data-col="score" data-k="score"><span class="th-label" data-i18n="ssc_bw.table.score">Score</span><span class="arrow">▼</span></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty" id="empty" hidden data-i18n="ssc_bw.empty">No Pokémon match the current filters</div>
+    </div>
+  </div>
+
+  <div class="note" id="note"></div>
+
+  <footer class="site-footer">
+    <h2 data-i18n="ssc_bw.footer.about">About this site</h2>
+    <p data-i18n="ssc_bw.footer.unofficial">An unofficial, fan-made lookup tool.</p>
+    <p data-i18n="ssc_bw.footer.disclaimer">All information is subject to actual in-game content. Please do not rely blindly on this site's data.</p>
+    <p>
+      <span data-i18n="ssc_bw.footer.sourcesPrefix">Data sources: </span><a href="https://www.curseforge.com/minecraft/modpacks/society-sunlit-cobblemon" target="_blank" rel="noopener noreferrer" data-i18n="ssc_bw.footer.sourceSunlit">Sunlit Cobblemon</a><span data-i18n="ssc_bw.footer.sourceSunlitDetail"> (includes the workstation mod, custom recipe data, and some language files)</span><span data-i18n="ssc_bw.footer.sourcesSep">, </span><a href="https://gitlab.com/cable-mc/cobblemon/-/tree/main/common/src/main/resources/data/cobblemon/species?ref_type=heads" target="_blank" rel="noopener noreferrer" data-i18n="ssc_bw.footer.sourceCobblemon">Cobblemon</a><span data-i18n="ssc_bw.footer.sourceCobblemonDetail"> (Pokémon stat data)</span>
+    </p>
+    <p data-i18n="ssc_bw.footer.thanks">Thanks to everyone.</p>
+    <p data-i18n="ssc_bw.footer.feedback">Feedback: GitHub</p>
+  </footer>
+</div>
+
+<script src="data/lang.js"></script>
+<script>
+(function () {
+  // 1.2.0+ supports a locally imported data pack. The bundled data files are
+  // only a development/offline fallback.
+  let imported = null;
+  try { imported = JSON.parse(localStorage.getItem("sunlit.imported") || "null"); } catch (_) {}
+  if (imported && imported.data) {
+    window.SUNLIT_DATA = imported.data;
+    window.SUNLIT_POKEMON_NAMES = imported.pokemonNames || {};
+    window.__SUNLIT_IMPORTED__ = imported.source || {};
+  } else if (new URLSearchParams(location.search).get("bundled") === "1") {
+    // Local development only: ?bundled=1 loads data/all-data.js if present.
+    document.write('<script src="data/pokemon-names.js"><\/script>');
+    document.write('<script src="data/all-data.js"><\/script>');
+  }
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+
+  const D = window.SUNLIT_DATA;
+  const TYPE_COLORS = (D && D.typeColors) || {};
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  const LANGUAGES = window.SSC_BW_LANGUAGES || [
+    { id: "en", locale: "en_us", label: "English", tag: "en" },
+    { id: "zh", locale: "zh_cn", label: "中文", tag: "zh-CN" },
+  ];
+  const LANGS = Object.fromEntries(LANGUAGES.map((language) => [language.id, language.locale]));
+  const LOCALE_KEYS = LANGS;
+  const LANG_TAGS = Object.fromEntries(LANGUAGES.map((language) => [language.id, language.tag]));
+  const DEFAULT_LANG = "en";
+  const LANG_DATA = window.SSC_BW_LANG || {};
+  const POKEMON_NAMES = window.SUNLIT_POKEMON_NAMES || {};
+  let LANG = DEFAULT_LANG;
+  let THEME = document.documentElement.dataset.theme === "dark" ? "dark" : "light";
+
+  function langTable(lang = LANG) {
+    return LANG_DATA[LANGS[lang]] || LANG_DATA.en_us || {};
+  }
+
+  function t(key, params, fallback) {
+    let text = langTable()[key];
+    if (text == null) text = langTable(DEFAULT_LANG)[key];
+    if (text == null) text = fallback != null ? fallback : key;
+    if (!params) return String(text);
+    return String(text).replace(/\{(\w+)\}/g, (match, name) => (
+      params[name] == null ? match : String(params[name])
+    ));
+  }
+
+  function readLang() {
+    try {
+      const fromUrl = new URLSearchParams(location.search).get("lang");
+      if (fromUrl && LANGS[fromUrl]) return fromUrl;
+    } catch (_) {}
+    try {
+      const saved = localStorage.getItem("ssc_bw.lang");
+      if (saved && LANGS[saved]) return saved;
+    } catch (_) {}
+    return DEFAULT_LANG;
+  }
+
+  LANG = readLang();
+
+  function buildLangOptions() {
+    $("lang").innerHTML = LANGUAGES
+      .map((language) => `<option value="${esc(language.id)}">${esc(language.label)}</option>`)
+      .join("");
+  }
+
+  function buildFormCategoryOptions() {
+    $("formCategory").innerHTML = FORM_CATEGORIES
+      .map((category) => {
+        const key = category ? `ssc_bw.formCategory.${category}` : "ssc_bw.formCategory.all";
+        return `<option value="${esc(category)}">${esc(t(key))}</option>`;
+      })
+      .join("");
+  }
+
+  function updateThemeButton() {
+    const next = THEME === "dark" ? "light" : "dark";
+    $("themeIcon").textContent = THEME === "dark" ? "☀" : "☾";
+    $("themeLabel").textContent = t(next === "dark" ? "ssc_bw.theme.dark" : "ssc_bw.theme.light");
+    $("themeToggle").setAttribute(
+      "aria-label",
+      t(next === "dark" ? "ssc_bw.theme.switchToDark" : "ssc_bw.theme.switchToLight")
+    );
+  }
+
+  function applyTheme(theme, persist = true) {
+    THEME = theme === "dark" ? "dark" : "light";
+    document.documentElement.dataset.theme = THEME;
+    if (persist) {
+      try { localStorage.setItem("ssc_bw.theme", THEME); } catch (_) {}
+    }
+    updateThemeButton();
+  }
+
+  if (!D) {
+    document.querySelector(".wrap").insertAdjacentHTML(
+      "beforeend",
+      `<div class="error">尚未导入数据，请先<a href="import.html" style="color:inherit;font-weight:600">导入整合包数据</a>。<br><span style="font-weight:400">No data imported yet.</span></div>`
+    );
+    return;
+  }
+
+  function typeName(id) {
+    return t(`ssc_bw.type.${id}`, null, id);
+  }
+
+  function dataLangKey(lang = LANG) {
+    return LOCALE_KEYS[lang] || "en_us";
+  }
+
+  function stationName(station) {
+    return t(
+      `ssc_bw.station.${station.id}.name`,
+      null,
+      (station.name && (station.name[dataLangKey()] || station.name.zh_cn)) || station.id
+    );
+  }
+
+  function stationHelp(station) {
+    return t(`ssc_bw.station.${station.id}.help`, null, station.help || "");
+  }
+
+  function roleName(station, typeDef) {
+    return t(
+      `ssc_bw.station.${station.id}.type.${typeDef.id}.role`,
+      null,
+      typeDef.roleZh || typeDef.roleShort || ""
+    );
+  }
+
+  function shortRoleName(station, typeDef) {
+    return t(
+      `ssc_bw.station.${station.id}.type.${typeDef.id}.short`,
+      null,
+      typeDef.roleShort || typeDef.roleZh || ""
+    );
+  }
+
+  function roleDescription(station, typeDef) {
+    const generic = t(`ssc_bw.station.${station.id}.desc`, null, typeDef.roleDesc || "");
+    return t(`ssc_bw.station.${station.id}.type.${typeDef.id}.desc`, null, generic);
+  }
+
+  function variantName(station, typeDef, variant) {
+    return t(
+      `ssc_bw.station.${station.id}.type.${typeDef.id}.variant.${variant.id}`,
+      null,
+      variant.name || ""
+    );
+  }
+
+  function pokemonName(p, lang = LANG) {
+    const key = dataLangKey(lang);
+    const localized = POKEMON_NAMES[key] && POKEMON_NAMES[key][p.id];
+    return localized || (p.name && (p.name[key] || p.name.en || p.name.zh_cn)) || p.id;
+  }
+
+  function allPokemonNames(p) {
+    const names = new Set();
+    for (const key of Object.keys(POKEMON_NAMES)) {
+      if (POKEMON_NAMES[key][p.id]) names.add(POKEMON_NAMES[key][p.id]);
+    }
+    if (p.name) {
+      if (p.name.en) names.add(p.name.en);
+      if (p.name.zh_cn) names.add(p.name.zh_cn);
+    }
+    return [...names];
+  }
+
+  function formCategory(p) {
+    if (!p.isForm) return "";
+    const name = String(p.formName || "").toLowerCase();
+    if (/^alola/.test(name)) return "regional-alola";
+    if (/^galar/.test(name)) return "regional-galar";
+    if (/^hisui/.test(name)) return "regional-hisui";
+    if (/^paldea/.test(name)) return "regional-paldea";
+    if (/^mega/.test(name)) return "mega";
+    if (/^gmax/.test(name)) return "gmax";
+    if (/^primal/.test(name)) return "primal";
+    if (/totem/.test(name)) return "totem";
+    return "other";
+  }
+
+  function matchesFormCategory(p, category) {
+    if (!category) return true;
+    const current = p._formCat !== undefined ? p._formCat : formCategory(p);
+    if (category === "regional") return current.startsWith("regional-");
+    return current === category;
+  }
+
+  function natureName(id) {
+    return t(`ssc_bw.nature.${id}`, null, id);
+  }
+
+  const COLLATORS = {};
+  function getCollator() {
+    const tag = locale();
+    return COLLATORS[tag] || (COLLATORS[tag] = new Intl.Collator(tag));
+  }
+
+  function locale() {
+    return LANG_TAGS[LANG] || "en";
+  }
+
+  const ALL_SHOWS = ["legendary", "mythical", "ultra", "paradox"];
+  const FORM_CATEGORIES = [
+    "",
+    "regional",
+    "regional-alola",
+    "regional-galar",
+    "regional-hisui",
+    "regional-paldea",
+    "mega",
+    "gmax",
+    "primal",
+    "totem",
+    "other",
+  ];
+
+  const NATURES = [
+    { id: "hardy", plus: null, minus: null },
+    { id: "lonely", plus: "attack", minus: "defence" },
+    { id: "brave", plus: "attack", minus: "speed" },
+    { id: "adamant", plus: "attack", minus: "special_attack" },
+    { id: "naughty", plus: "attack", minus: "special_defence" },
+    { id: "bold", plus: "defence", minus: "attack" },
+    { id: "docile", plus: null, minus: null },
+    { id: "relaxed", plus: "defence", minus: "speed" },
+    { id: "impish", plus: "defence", minus: "special_attack" },
+    { id: "lax", plus: "defence", minus: "special_defence" },
+    { id: "timid", plus: "speed", minus: "attack" },
+    { id: "hasty", plus: "speed", minus: "defence" },
+    { id: "serious", plus: null, minus: null },
+    { id: "jolly", plus: "speed", minus: "special_attack" },
+    { id: "naive", plus: "speed", minus: "special_defence" },
+    { id: "modest", plus: "special_attack", minus: "attack" },
+    { id: "mild", plus: "special_attack", minus: "defence" },
+    { id: "quiet", plus: "special_attack", minus: "speed" },
+    { id: "bashful", plus: null, minus: null },
+    { id: "rash", plus: "special_attack", minus: "special_defence" },
+    { id: "calm", plus: "special_defence", minus: "attack" },
+    { id: "gentle", plus: "special_defence", minus: "defence" },
+    { id: "sassy", plus: "special_defence", minus: "speed" },
+    { id: "careful", plus: "special_defence", minus: "special_attack" },
+    { id: "quirky", plus: null, minus: null },
+  ];
+  const NATURE_BY_ID = Object.fromEntries(NATURES.map((n) => [n.id, n]));
+
+  const DEFAULTS = {
+    station: D.stations[0].id,
+    types: [],
+    works: [],
+    q: "",
+    level: 100,
+    iv: 0,
+    ev: 0,
+    nature: "hardy",
+    shiny: false,
+    includeForms: true,
+    formCategory: "",
+    shows: [...ALL_SHOWS],
+    expanded: null,
+    sortKey: "score",
+    sortDir: -1,
+  };
+
+  const state = {
+    ...DEFAULTS,
+    types: [],
+    works: [],
+    shows: [...ALL_SHOWS],
+  };
+
+  function readUrl() {
+    try {
+      const p = new URLSearchParams(location.search);
+      if (p.get("station") && D.stations.some((s) => s.id === p.get("station"))) state.station = p.get("station");
+      if (p.get("type")) state.types = p.get("type").split(",").filter(Boolean).slice(0, 1);
+      if (p.get("work")) {
+        state.works = p.get("work").split(",").filter(Boolean).slice(0, 1);
+        const workType = state.works[0] ? state.works[0].split(":")[0] : "";
+        if (workType) state.types = [workType];
+      }
+      // 兼容旧链接：type=ice&variant=crystal
+      if (p.get("type") && !p.get("work") && p.get("variant") && p.get("variant") !== "best" && state.types.length === 1) {
+        state.works = [`${state.types[0]}:${p.get("variant")}`];
+      }
+      if (p.get("q")) state.q = p.get("q");
+      if (p.get("level")) state.level = clampInt(p.get("level"), 1, 100, 100);
+      if (p.get("iv")) state.iv = clampInt(p.get("iv"), 0, 31, 0);
+      if (p.get("ev")) state.ev = clampInt(p.get("ev"), 0, 252, 0);
+      if (p.get("nature") && NATURE_BY_ID[p.get("nature")]) state.nature = p.get("nature");
+      state.shiny = p.get("shiny") === "1";
+      if (p.has("forms")) state.includeForms = p.get("forms") === "1";
+      if (p.get("form") && FORM_CATEGORIES.includes(p.get("form"))) state.formCategory = p.get("form");
+      if (p.has("show")) state.shows = p.get("show") ? p.get("show").split(",").filter(Boolean) : [];
+      // 兼容旧链接：exclude=legendary 表示“除了传说都显示”
+      if (p.has("exclude")) {
+        const excluded = p.get("exclude").split(",");
+        state.shows = ALL_SHOWS.filter((k) => !excluded.includes(k));
+      }
+      if (p.get("special") === "1") state.shows = [];
+      if (p.get("sort")) state.sortKey = p.get("sort");
+      if (p.get("dir")) state.sortDir = Number(p.get("dir")) === 1 ? 1 : -1;
+    } catch (_) {}
+  }
+
+  let urlWriteTimer = 0;
+  let lastUrlSearch = location.search;
+
+  function flushWriteUrl() {
+    if (urlWriteTimer) {
+      clearTimeout(urlWriteTimer);
+      urlWriteTimer = 0;
+    }
+    try {
+      const p = new URLSearchParams();
+      p.set("station", state.station);
+      if (state.types.length) p.set("type", state.types.join(","));
+      if (state.works.length) p.set("work", state.works.join(","));
+      if (state.q) p.set("q", state.q);
+      if (state.level !== 100) p.set("level", String(state.level));
+      if (state.iv !== 0) p.set("iv", String(state.iv));
+      if (state.ev !== 0) p.set("ev", String(state.ev));
+      if (state.nature !== "hardy") p.set("nature", state.nature);
+      if (state.shiny) p.set("shiny", "1");
+      if (!state.includeForms) p.set("forms", "0");
+      if (state.includeForms && state.formCategory) p.set("form", state.formCategory);
+      if (state.shows.length !== ALL_SHOWS.length || !ALL_SHOWS.every((k) => state.shows.includes(k))) {
+        p.set("show", state.shows.join(","));
+      }
+      if (state.sortKey !== "score") p.set("sort", state.sortKey);
+      if (state.sortDir !== -1) p.set("dir", String(state.sortDir));
+      if (LANG !== DEFAULT_LANG) p.set("lang", LANG);
+      const nextSearch = `?${p.toString()}`;
+      if (nextSearch === lastUrlSearch) return;
+      lastUrlSearch = nextSearch;
+      const url = new URL(location.href);
+      url.search = nextSearch;
+      history.replaceState(null, "", url);
+    } catch (_) {}
+  }
+
+  function writeUrl(debounce = false) {
+    if (!debounce) {
+      flushWriteUrl();
+      return;
+    }
+    if (urlWriteTimer) clearTimeout(urlWriteTimer);
+    urlWriteTimer = setTimeout(flushWriteUrl, 120);
+  }
+
+  function clampInt(v, min, max, fallback) {
+    const n = parseInt(v, 10);
+    if (!Number.isFinite(n)) return fallback;
+    return Math.max(min, Math.min(max, n));
+  }
+
+  function natureMultiplier(statKey) {
+    const nature = NATURE_BY_ID[state.nature] || NATURE_BY_ID.hardy;
+    if (nature.plus === statKey) return 1.1;
+    if (nature.minus === statKey) return 0.9;
+    return 1;
+  }
+
+  function natureText(id = state.nature) {
+    const nature = NATURE_BY_ID[id] || NATURE_BY_ID.hardy;
+    const name = natureName(nature.id);
+    if (!nature.plus) return t("ssc_bw.nature.neutral", { name });
+    const effect = t("ssc_bw.nature.effect", {
+      plus: statName(nature.plus),
+      minus: statName(nature.minus),
+    });
+    return t("ssc_bw.nature.option", { name, effect });
+  }
+
+  function buildNatureOptions() {
+    $("nature").innerHTML = NATURES
+      .map((n) => {
+        const effect = n.plus
+          ? t("ssc_bw.nature.effect", { plus: statName(n.plus), minus: statName(n.minus) })
+          : t("ssc_bw.nature.none");
+        return `<option value="${n.id}">${esc(t("ssc_bw.nature.option", { name: natureName(n.id), effect }))}</option>`;
+      })
+      .join("");
+  }
+
+  function recommendNature(speedKey, multKey, preferMult) {
+    const used = new Set([speedKey, multKey].filter(Boolean));
+    let targetKey = preferMult ? multKey : speedKey;
+    let reason = "";
+
+    // 性格不能提升 HP；如果目标乘区是 HP，就改推荐另一个可用乘区的属性。
+    if (targetKey === "hp") {
+      const other = [speedKey, multKey].find((key) => key && key !== "hp");
+      if (other) {
+        targetKey = other;
+        reason = t("ssc_bw.calc.reason.hpOther");
+      } else {
+        const neutral = NATURE_BY_ID.hardy;
+        return { nature: neutral, reason: t("ssc_bw.calc.reason.hpOnly") };
+      }
+    }
+
+    const dumpOrder = ["special_attack", "attack", "defence", "special_defence", "speed"];
+    const unused = dumpOrder.filter((key) => !used.has(key));
+    let candidates = NATURES
+      .filter((n) => n.plus === targetKey && n.minus && !used.has(n.minus))
+      .sort((a, b) => unused.indexOf(a.minus) - unused.indexOf(b.minus));
+
+    if (!candidates.length) {
+      candidates = NATURES.filter((n) => n.plus === targetKey && n.minus);
+    }
+    if (!candidates.length) {
+      return { nature: NATURE_BY_ID.hardy, reason: t("ssc_bw.calc.reason.noNature") };
+    }
+
+    const picked = candidates[0];
+    if (!reason) {
+      reason = t("ssc_bw.calc.reason.better", {
+        plus: statName(picked.plus),
+        minus: statName(picked.minus),
+        zone: t(picked.plus === speedKey ? "ssc_bw.zone.speed" : "ssc_bw.zone.mult"),
+      });
+    } else {
+      reason = t("ssc_bw.calc.reason.hpOther");
+    }
+    return { nature: picked, reason };
+  }
+
+  function statAt(base, level, iv, ev, statKey, isHp) {
+    const core = Math.floor(((2 * base + iv + Math.floor(ev / 4)) * level) / 100);
+    if (isHp) return core + level + 10;
+    return Math.floor((core + 5) * natureMultiplier(statKey));
+  }
+
+  function speedModifier(stat, shiny) {
+    return (Math.floor((stat / 127.5) * 100) / 100) * (shiny ? 2 : 1);
+  }
+
+  function multChance(stat, shiny) {
+    return Math.floor((stat / 127.5) * 100) * (shiny ? 2 : 1);
+  }
+
+  function aoeRadius(stat, shiny) {
+    return Math.floor(Math.min(10, Math.max(0, (stat / 500) * 10 * (shiny ? 2 : 1))));
+  }
+
+  const STATION_BY_ID = Object.fromEntries(D.stations.map((s) => [s.id, s]));
+
+  function getStation() {
+    return STATION_BY_ID[state.station] || D.stations[0];
+  }
+
+  function getVariant(typeDef, variantId) {
+    return typeDef.variants.find((v) => v.id === variantId) || typeDef.variants[0];
+  }
+
+  function calcWork(p, station, typeDef, variant, optKey) {
+    const get = (key) => statAt(p.baseStats[key], state.level, state.iv, state.ev, key, key === "hp");
+    const speedValue = get(variant.speedStat);
+    const speed = speedModifier(speedValue, state.shiny);
+    const multValue = variant.multStat ? get(variant.multStat) : null;
+    const mult = multValue == null ? 0 : multChance(multValue, state.shiny);
+    const score = station.mode === "action" ? speed : speed * (1 + mult / 100);
+    const aoe = station.mode === "buff" ? aoeRadius(get(station.aoeStat), state.shiny) : null;
+    const range = station.mode === "action" ? Math.max(1, Math.min(10, Math.floor(state.level / 10))) : aoe;
+    const baseTime = typeDef.baseTime || variant.baseTime || 0;
+    const actionTime = station.mode === "action" ? baseTime / speed / 20 : null;
+    return { p, station, typeDef, variant, optKey: optKey || workKey(typeDef, variant), speedValue, multValue, speed, mult, score, aoe, range, baseTime, actionTime };
+  }
+
+  function scoreForValues(station, speedValue, multValue) {
+    const speed = speedModifier(speedValue, state.shiny);
+    const mult = multValue == null ? 0 : multChance(multValue, state.shiny);
+    const score = station.mode === "action" ? speed : speed * (1 + mult / 100);
+    return { speed, mult, score };
+  }
+
+  function workKey(typeDef, variant) {
+    return `${typeDef.id}:${variant.id}`;
+  }
+
+  function workOptions(station) {
+    if (station._options) return station._options;
+    const out = [];
+    for (const typeDef of station.types) {
+      for (const variant of typeDef.variants) {
+        out.push({ key: workKey(typeDef, variant), typeDef, variant });
+      }
+    }
+    station._options = out;
+    station._typeSet = new Set(station.types.map((t) => t.id));
+    station._keySet = new Set(out.map((o) => o.key));
+    return out;
+  }
+
+  for (const s of D.stations) workOptions(s);
+  for (const p of D.pokemon) {
+    p._formCat = formCategory(p);
+    p._specialMask =
+      (p.isLegendary ? 1 : 0) |
+      (p.isMythical ? 2 : 0) |
+      (p.isUltraBeast ? 4 : 0) |
+      (p.isParadox ? 8 : 0);
+    p._badgeMask = (p.isForm ? 16 : 0) | p._specialMask;
+    p._typeSet = new Set(p.types || []);
+    p._searchHay = [...allPokemonNames(p), p.id, p.baseId, ...(p.types || [])].join(" ").toLowerCase();
+  }
+
+  function workLabel(opt, includeSub) {
+    const station = getStation();
+    const role = roleName(station, opt.typeDef) || shortRoleName(station, opt.typeDef);
+    const base = `${typeName(opt.typeDef.id)} · ${role}`;
+    return includeSub && opt.typeDef.variants.length > 1
+      ? `${base} · ${variantName(station, opt.typeDef, opt.variant)}`
+      : base;
+  }
+
+  function variantLabel(opt) {
+    const station = getStation();
+    return variantName(station, opt.typeDef, opt.variant);
+  }
+
+  function bestWorkForPokemon(p, station, selectedOptions) {
+    let best = null;
+    for (let i = 0; i < selectedOptions.length; i++) {
+      const opt = selectedOptions[i];
+      if (!p._typeSet.has(opt.typeDef.id)) continue;
+      const w = calcWork(p, station, opt.typeDef, opt.variant, opt.key);
+      if (!best || w.score > best.score) best = w;
+    }
+    return best;
+  }
+
+  function fmtDelta(value) {
+    const sign = value >= 0 ? "+" : "";
+    return `${sign}${value.toFixed(3)}`;
+  }
+
+  function calcHtml(row) {
+    const p = row.p;
+    const work = row.work;
+    const station = work.station;
+    const v = work.variant;
+    const speedBase = p.baseStats[v.speedStat];
+    const speedRaw = work.speedValue / 127.5;
+    const speedBefore = Math.floor(speedRaw * 100) / 100;
+    const speedPlus = scoreForValues(station, work.speedValue + 1, work.multValue);
+    const speedDelta = speedPlus.score - work.score;
+
+    let multBase = null;
+    let multRaw = null;
+    let multBefore = null;
+    let multPlus = null;
+    let multDelta = 0;
+    if (v.multStat) {
+      multBase = p.baseStats[v.multStat];
+      multRaw = work.multValue / 127.5;
+      multBefore = Math.floor(multRaw * 100);
+      multPlus = scoreForValues(station, work.speedValue, work.multValue + 1);
+      multDelta = multPlus.score - work.score;
+    }
+
+    const speedBlock = `<div class="calc-block"><h4>${esc(t("ssc_bw.calc.speed.title", { stat: statName(v.speedStat) }))}</h4>
+      <div class="calc-line">${esc(t("ssc_bw.calc.baseStat", { value: speedBase }))}</div>
+      <div class="calc-line">${esc(t("ssc_bw.calc.statValue", { value: work.speedValue }))}</div>
+      <div class="calc-line">${esc(t("ssc_bw.calc.basis", { level: state.level, iv: state.iv, ev: state.ev, nature: natureText() }))}</div>
+      <div class="calc-line">${esc(t("ssc_bw.calc.divide127", { value: work.speedValue, result: speedRaw.toFixed(4) }))}</div>
+      <div class="calc-line">${esc(t("ssc_bw.calc.floor2", { value: speedBefore.toFixed(2) }))}</div>
+      <div class="calc-line">${esc(t("ssc_bw.calc.shinySpeed", { factor: state.shiny ? 2 : 1, value: work.speed.toFixed(2) }))}</div>
+    </div>`;
+
+    let outputBlock;
+    if (station.mode === "recipe") {
+      outputBlock = v.multStat
+        ? `<div class="calc-block"><h4>${esc(t("ssc_bw.calc.mult.title", { stat: statName(v.multStat) }))}</h4>
+          <div class="calc-line">${esc(t("ssc_bw.calc.baseStat", { value: multBase }))}</div>
+          <div class="calc-line">${esc(t("ssc_bw.calc.statValue", { value: work.multValue }))}</div>
+          <div class="calc-line">${esc(t("ssc_bw.calc.divide127", { value: work.multValue, result: multRaw.toFixed(4) }))}</div>
+          <div class="calc-line">${esc(t("ssc_bw.calc.floorPct", { value: multBefore }))}</div>
+          <div class="calc-line">${esc(t("ssc_bw.calc.shinyMult", { factor: state.shiny ? 2 : 1, value: work.mult }))}</div>
+          <div class="calc-line">${esc(t("ssc_bw.calc.expected", { value: work.mult, result: (1 + work.mult / 100).toFixed(2) }))}</div>
+        </div>`
+        : `<div class="calc-block"><h4>${esc(t("ssc_bw.calc.mult.noneTitle"))}</h4><div class="calc-line">${esc(t("ssc_bw.calc.mult.noneBody"))}</div></div>`;
+    } else if (station.mode === "action") {
+      outputBlock = `<div class="calc-block"><h4>${esc(t("ssc_bw.calc.action.title", { stat: statName(v.speedStat) }))}</h4>
+        <div class="calc-line">${esc(t("ssc_bw.calc.action.base", { ticks: work.baseTime }))}</div>
+        <div class="calc-line">${esc(t("ssc_bw.calc.action.formula", { base: work.baseTime, speed: work.speed.toFixed(2), result: fmtDuration(work.actionTime) }))}</div>
+        <div class="calc-line">${esc(t("ssc_bw.calc.action.range", { radius: work.range, range: fmtRange(work.range, station.mode), horizontal: work.range * 2 + 1, vertical: Math.min(2, work.range) * 2 + 1 }))}</div>
+      </div>`;
+    } else {
+      outputBlock = `<div class="calc-block"><h4>${esc(t("ssc_bw.calc.range.title"))}</h4>
+        <div class="calc-line">${esc(t("ssc_bw.calc.range.hp", { value: statAt(p.baseStats[station.aoeStat], state.level, state.iv, state.ev, "hp", true) }))}</div>
+        <div class="calc-line">${esc(t("ssc_bw.calc.range.formula"))}</div>
+        <div class="calc-line">${esc(t("ssc_bw.calc.range.shiny", { factor: state.shiny ? 2 : 1, radius: work.range, range: fmtRange(work.range, station.mode) }))}</div>
+      </div>`;
+    }
+
+    const speedName = statName(v.speedStat);
+    const multName = v.multStat ? statName(v.multStat) : "";
+    const scoreBlock = `<div class="calc-block"><h4>${esc(t("ssc_bw.calc.score.title"))}</h4>
+      <div class="calc-line">${esc(t(station.mode === "recipe" ? "ssc_bw.calc.score.formulaRecipe" : "ssc_bw.calc.score.formulaSpeed", { value: work.score.toFixed(2) }))}</div>
+      <div class="calc-line">${esc(t("ssc_bw.calc.score.statPlus", { stat: speedName, score: speedPlus.score.toFixed(3), delta: fmtDelta(speedDelta) }))}</div>
+      ${v.multStat ? `<div class="calc-line">${esc(t("ssc_bw.calc.score.statPlusMult", { stat: multName, score: multPlus.score.toFixed(3), delta: fmtDelta(multDelta) }))}</div>` : ""}
+      ${station.mode === "action" ? `<div class="calc-line">${esc(t("ssc_bw.calc.score.actionPlus", { stat: speedName, time: fmtDuration(work.baseTime / speedPlus.speed / 20) }))}</div>` : ""}
+    </div>`;
+
+    let recommend;
+    if (station.mode !== "recipe" || !v.multStat) {
+      recommend = t("ssc_bw.calc.recommend.speedOnly", { stat: speedName });
+    } else if (Math.abs(speedDelta - multDelta) < 1e-9) {
+      recommend = t("ssc_bw.calc.recommend.equal", { speed: speedName, mult: multName });
+    } else {
+      recommend = speedDelta > multDelta
+        ? t("ssc_bw.calc.recommend.speed", { stat: speedName })
+        : t("ssc_bw.calc.recommend.mult", { stat: multName });
+    }
+
+    const preferMult = station.mode === "recipe" && v.multStat && multDelta > speedDelta;
+    const targetName = preferMult ? multName : speedName;
+    const targetDelta = preferMult ? multDelta : speedDelta;
+    const natureRec = recommendNature(v.speedStat, v.multStat, preferMult);
+    const ivAdvice = state.iv >= 31
+      ? t("ssc_bw.calc.advice.ivMax", { iv: state.iv, stat: targetName })
+      : t("ssc_bw.calc.advice.ivNotMax", { iv: state.iv, stat: targetName });
+    const evAdvice = t("ssc_bw.calc.advice.evText", { stat: targetName });
+
+    return `<div class="calc-wrap">
+      <div class="calc-grid">${speedBlock}${outputBlock}${scoreBlock}</div>
+      <div class="calc-meta">
+        <div class="calc-rec-bar">
+          <span class="calc-rec">${esc(recommend)}</span>
+          <span class="calc-rec-delta">${esc(t("ssc_bw.calc.advice.perPoint", { stat: targetName, delta: fmtDelta(targetDelta) }))}</span>
+        </div>
+        <div class="calc-advice">
+          <div class="calc-kv"><b>${esc(t("ssc_bw.calc.advice.recommendedNature"))}</b>${esc(natureText(natureRec.nature.id))}</div>
+          <div class="calc-kv"><b>${esc(t("ssc_bw.calc.advice.reason"))}</b>${esc(natureRec.reason)}</div>
+          <div class="calc-kv"><b>${esc(t("ssc_bw.calc.advice.order"))}</b>${esc(t("ssc_bw.calc.advice.orderValue"))}</div>
+          <div class="calc-kv"><b>${esc(t("ssc_bw.calc.advice.ivLabel"))}</b>${esc(ivAdvice)}</div>
+          <div class="calc-kv"><b>${esc(t("ssc_bw.calc.advice.evLabel"))}</b>${esc(evAdvice)}</div>
+        </div>
+      </div>
+      <div class="calc-note">${esc(t("ssc_bw.calc.note"))}</div>
+    </div>`;
+  }
+
+  const TYPE_PILL_CACHE = {};
+  const TYPE_FG = {};
+  for (const [type, color] of Object.entries(TYPE_COLORS)) {
+    const text = color.replace("#", "");
+    const r = parseInt(text.slice(0, 2), 16), g = parseInt(text.slice(2, 4), 16), b = parseInt(text.slice(4, 6), 16);
+    TYPE_FG[type] = (r * 299 + g * 587 + b * 114) / 1000 >= 150 ? "#20262f" : "#fff";
+  }
+
+  function typePill(type) {
+    const key = `${LANG}:${type}`;
+    if (TYPE_PILL_CACHE[key]) return TYPE_PILL_CACHE[key];
+    const color = TYPE_COLORS[type] || "#999";
+    const fg = TYPE_FG[type] || "#fff";
+    const html = `<span class="pill" style="background:${color};color:${fg}">${esc(typeName(type))}</span>`;
+    TYPE_PILL_CACHE[key] = html;
+    return html;
+  }
+
+  function statName(key) {
+    return t(`ssc_bw.stat.${key}`, null, key);
+  }
+
+  function fmtDuration(seconds) {
+    if (!Number.isFinite(seconds)) return t("ssc_bw.table.none");
+    if (seconds >= 60) return t("ssc_bw.duration.minutes", { value: (seconds / 60).toFixed(1) });
+    return t("ssc_bw.duration.seconds", { value: seconds.toFixed(seconds < 10 ? 1 : 0) });
+  }
+
+  function fmtRange(radius, mode) {
+    if (!Number.isFinite(radius) || radius <= 0) return t("ssc_bw.table.none");
+    const horizontal = radius * 2 + 1;
+    const verticalRadius = mode === "action" ? Math.min(2, radius) : radius;
+    const vertical = verticalRadius * 2 + 1;
+    return `${horizontal}×${vertical}×${horizontal}`;
+  }
+
+  const BADGE_CACHE = {};
+  function badges(p) {
+    const mask = p._badgeMask || 0;
+    if (!mask) return "";
+    const key = `${LANG}:${mask}`;
+    if (BADGE_CACHE[key] !== undefined) return BADGE_CACHE[key];
+    const out = [];
+    if (mask & 16) out.push(`<span class="badge form">${esc(t("ssc_bw.badge.form"))}</span>`);
+    if (mask & 1) out.push(`<span class="badge special">${esc(t("ssc_bw.badge.legendary"))}</span>`);
+    if (mask & 2) out.push(`<span class="badge special">${esc(t("ssc_bw.badge.mythical"))}</span>`);
+    if (mask & 4) out.push(`<span class="badge special">${esc(t("ssc_bw.badge.ultra"))}</span>`);
+    if (mask & 8) out.push(`<span class="badge special">${esc(t("ssc_bw.badge.paradox"))}</span>`);
+    return (BADGE_CACHE[key] = out.join(""));
+  }
+
+  let cachedFilterKey = "";
+  let cachedBaseRows = [];
+  let cachedShowMult = false;
+  let cachedSortKey = "";
+  let cachedSortedRows = [];
+  let currentRowByKey = new Map();
+
+  function currentRows() {
+    const station = getStation();
+    const q = state.q.trim().toLowerCase();
+    const filterKey = `${station.id}|${state.types[0] || ""}|${state.works[0] || ""}|${q}|${state.level}|${state.iv}|${state.ev}|${state.nature}|${state.shiny ? 1 : 0}|${state.includeForms ? 1 : 0}|${state.formCategory}|${state.shows.join(",")}|${LANG}`;
+
+    if (filterKey !== cachedFilterKey) {
+      const typeFilter = state.types[0] || "";
+      const workFilter = state.works[0] || "";
+      const options = workOptions(station);
+      const selectedOptions = options.filter(
+        (o) => (!typeFilter || o.typeDef.id === typeFilter) && (!workFilter || o.key === workFilter)
+      );
+      const showMask =
+        (state.shows.includes("legendary") ? 1 : 0) |
+        (state.shows.includes("mythical") ? 2 : 0) |
+        (state.shows.includes("ultra") ? 4 : 0) |
+        (state.shows.includes("paradox") ? 8 : 0);
+
+      const rows = [];
+      const byKey = new Map();
+      let hasMult = false;
+      for (let i = 0; i < D.pokemon.length; i++) {
+        const p = D.pokemon[i];
+        if (!state.includeForms) {
+          if (p.isForm) continue;
+        } else if (state.formCategory) {
+          if (!p.isForm || !matchesFormCategory(p, state.formCategory)) continue;
+        }
+        if (p._specialMask && (p._specialMask & showMask) === 0) continue;
+        if (q && !p._searchHay.includes(q)) continue;
+        const work = bestWorkForPokemon(p, station, selectedOptions);
+        if (!work) continue;
+        if (work.variant.multStat) hasMult = true;
+        const rowKey = `${station.id}|${p.id}|${work.optKey}`;
+        const row = {
+          p,
+          work,
+          rowKey,
+          primaryName: pokemonName(p),
+          secondaryName: LANG === "en" ? "" : pokemonName(p, "en"),
+        };
+        rows.push(row);
+        byKey.set(rowKey, row);
+      }
+      cachedFilterKey = filterKey;
+      cachedBaseRows = rows;
+      cachedShowMult = station.mode === "recipe" && hasMult;
+      currentRowByKey = byKey;
+      cachedSortKey = "";
+    }
+
+    const fullSortKey = `${cachedFilterKey}|${state.sortKey}|${state.sortDir}`;
+    if (fullSortKey !== cachedSortKey) {
+      const rows = cachedBaseRows.slice();
+      const collator = getCollator();
+      const dir = state.sortDir;
+      const key = state.sortKey;
+      rows.sort((a, b) => {
+        let r = 0;
+        switch (key) {
+          case "name":
+            r = collator.compare(a.primaryName, b.primaryName);
+            break;
+          case "dex":
+            r = (a.p.dex || 99999) - (b.p.dex || 99999);
+            break;
+          case "speedStat":
+            r = a.work.speedValue - b.work.speedValue;
+            break;
+          case "multStat":
+            r = (a.work.multValue || 0) - (b.work.multValue || 0);
+            break;
+          case "speed":
+            r = a.work.speed - b.work.speed;
+            break;
+          case "mult":
+            r = (a.work.mult || 0) - (b.work.mult || 0);
+            break;
+          case "range":
+            r = (a.work.range || 0) - (b.work.range || 0);
+            break;
+          case "actionTime":
+            r = (a.work.actionTime ?? 999999) - (b.work.actionTime ?? 999999);
+            break;
+          case "score":
+          default:
+            r = a.work.score - b.work.score;
+            break;
+        }
+        if (r === 0) r = a.work.speed - b.work.speed;
+        if (r === 0) r = collator.compare(a.primaryName, b.primaryName);
+        return r * dir;
+      });
+      cachedSortKey = fullSortKey;
+      cachedSortedRows = rows;
+    }
+
+    return { station, rows: cachedSortedRows, showMult: cachedShowMult };
+  }
+
+  let builtTypeChipsKey = "";
+  let builtVariantChipsKey = "";
+  let builtNoteKey = "";
+
+  function updateControls() {
+    const station = getStation();
+
+    const validSort = ["score", "name", "dex", "speed", "speedStat"];
+    if (station.mode === "recipe") validSort.push("mult", "multStat");
+    if (station.mode === "action") validSort.push("actionTime");
+    if (station.mode === "buff") validSort.push("range");
+    if (!validSort.includes(state.sortKey)) {
+      state.sortKey = "score";
+      state.sortDir = -1;
+    }
+
+    const options = workOptions(station);
+    const validTypes = station._typeSet;
+    const validKeys = station._keySet;
+    state.types = state.types.filter((t) => validTypes.has(t)).slice(0, 1);
+    state.works = state.works.filter((k) => validKeys.has(k)).slice(0, 1);
+    if (state.works.length) {
+      const workType = state.works[0].split(":")[0];
+      if (!state.types.length || state.types[0] !== workType) state.types = [workType];
+    }
+
+    const typeChipsKey = `${station.id}|${LANG}`;
+    const typeChipsEl = $("typeChips");
+    if (typeChipsKey !== builtTypeChipsKey) {
+      builtTypeChipsKey = typeChipsKey;
+      typeChipsEl.innerHTML =
+        `<button type="button" class="chip" data-type="all">${esc(t("ssc_bw.filter.all"))}</button>` +
+        station.types
+          .map((typeDef) => {
+            const color = TYPE_COLORS[typeDef.id] || "#999";
+            const name = typeName(typeDef.id);
+            return `<button type="button" class="chip" data-type="${esc(typeDef.id)}" title="${esc(name)}"><span class="dot" style="background:${color}"></span>${esc(name)}</button>`;
+          })
+          .join("");
+    }
+    const activeTypeId = state.types[0] || "";
+    const typeBtns = typeChipsEl.children;
+    for (let i = 0; i < typeBtns.length; i++) {
+      const btn = typeBtns[i];
+      const id = btn.dataset.type;
+      btn.classList.toggle("on", id === "all" ? !activeTypeId : id === activeTypeId);
+    }
+
+    const activeType = activeTypeId ? station.types.find((typeDef) => typeDef.id === activeTypeId) || null : null;
+    $("roleRow").hidden = !activeType;
+    $("roleName").textContent = activeType ? roleName(station, activeType) : "";
+    const activeDesc = activeType ? roleDescription(station, activeType) : "";
+    $("roleDesc").textContent = activeDesc ? `· ${activeDesc}` : "";
+
+    $("variantRow").hidden = !activeTypeId;
+    const variantChipsEl = $("variantChips");
+    const variantChipsKey = `${station.id}|${activeTypeId}|${LANG}`;
+    if (variantChipsKey !== builtVariantChipsKey) {
+      builtVariantChipsKey = variantChipsKey;
+      const visibleOptions = activeTypeId
+        ? options.filter((o) => o.typeDef.id === activeTypeId)
+        : [];
+      variantChipsEl.innerHTML =
+        `<button type="button" class="chip" data-work="all">${esc(t("ssc_bw.filter.allRecipes"))}</button>` +
+        visibleOptions
+          .map((o) => {
+            const label = variantLabel(o);
+            return `<button type="button" class="chip" data-work="${esc(o.key)}" title="${esc(workLabel(o, true))}">${esc(label)}</button>`;
+          })
+          .join("");
+    }
+    const activeWorkKey = state.works[0] || "";
+    const varBtns = variantChipsEl.children;
+    for (let i = 0; i < varBtns.length; i++) {
+      const btn = varBtns[i];
+      const key = btn.dataset.work;
+      btn.classList.toggle("on", key === "all" ? !activeWorkKey : key === activeWorkKey);
+    }
+
+    $("formsChip").classList.toggle("on", state.includeForms);
+    $("formsChip").setAttribute("aria-pressed", String(state.includeForms));
+    $("formCategory").hidden = !state.includeForms;
+    if ($("formCategory").value !== state.formCategory) $("formCategory").value = state.formCategory;
+    const showBtns = document.querySelectorAll("[data-show]");
+    for (let i = 0; i < showBtns.length; i++) {
+      const btn = showBtns[i];
+      const on = state.shows.includes(btn.dataset.show);
+      btn.classList.toggle("on", on);
+      btn.setAttribute("aria-pressed", String(on));
+    }
+
+    if (document.activeElement !== $("q") && $("q").value !== state.q) $("q").value = state.q;
+    if ($("level").value !== String(state.level)) $("level").value = state.level;
+    if ($("iv").value !== String(state.iv)) $("iv").value = state.iv;
+    if ($("ev").value !== String(state.ev)) $("ev").value = state.ev;
+    if ($("nature").value !== state.nature) $("nature").value = state.nature;
+    if ($("shiny").checked !== state.shiny) $("shiny").checked = state.shiny;
+
+    if (typeChipsKey !== builtNoteKey) {
+      builtNoteKey = typeChipsKey;
+      const head = $("prodHead");
+      const headLabel = head.querySelector(".th-label");
+      if (station.mode === "action") {
+        headLabel.textContent = t("ssc_bw.table.actionTime");
+        head.dataset.k = "actionTime";
+      } else if (station.mode === "buff") {
+        headLabel.textContent = t("ssc_bw.table.none");
+        head.dataset.k = "range";
+      } else {
+        headLabel.textContent = t("ssc_bw.table.expectedYield");
+        head.dataset.k = "mult";
+      }
+
+      $("note").innerHTML =
+        `${esc(t("ssc_bw.note.station", { station: stationName(station), help: stationHelp(station) }))}<br>` +
+        esc(t("ssc_bw.note.gap")) +
+        esc(t("ssc_bw.note.formula")) +
+        (station.mode === "action"
+          ? esc(t("ssc_bw.note.action"))
+          : station.mode === "buff"
+            ? esc(t("ssc_bw.note.buff"))
+            : "");
+    }
+  }
+
+  const tableWrapEl = document.querySelector(".tablewrap");
+  const tableEl = document.querySelector(".tablecard table");
+  const tbodyEl = $("tbody");
+  const countEl = $("count");
+  const emptyEl = $("empty");
+  const sortableThs = [...document.querySelectorAll("th.sortable")];
+
+  let currentStation = null;
+  let currentRowsList = [];
+  let currentShowMult = false;
+  let currentShowProd = false;
+  let currentShowRange = false;
+  let currentColCount = 9;
+  let currentRowOffsets = new Int32Array(1);
+  let renderedStart = -1;
+  let renderedEnd = -1;
+  let lockedColKey = "";
+
+  function estimateRowHeight(row, showProd) {
+    const hasSecondary = Boolean(row.secondaryName);
+    const hasBadges = Boolean(row.p._badgeMask);
+    const nameLines = 1 + (hasSecondary ? 1 : 0) + (hasBadges ? 1 : 0);
+    if (nameLines >= 3) return 80;
+    if (nameLines === 2) return 59;
+    return showProd ? 56 : 39;
+  }
+
+  function rebuildRowOffsets(rows, showProd) {
+    const offsets = new Int32Array(rows.length + 1);
+    let sum = 0;
+    for (let i = 0; i < rows.length; i++) {
+      offsets[i] = sum;
+      sum += estimateRowHeight(rows[i], showProd);
+    }
+    offsets[rows.length] = sum;
+    currentRowOffsets = offsets;
+  }
+
+  function findRowIndexAtOffset(targetY) {
+    const offsets = currentRowOffsets;
+    const n = currentRowsList.length;
+    if (n === 0 || targetY <= 0) return 0;
+    if (targetY >= offsets[n]) return n - 1;
+    let lo = 0;
+    let hi = n - 1;
+    while (lo <= hi) {
+      const mid = (lo + hi) >>> 1;
+      if (offsets[mid + 1] <= targetY) lo = mid + 1;
+      else if (offsets[mid] > targetY) hi = mid - 1;
+      else return mid;
+    }
+    return Math.min(n - 1, lo);
+  }
+
+  let cachedViewHeight = Math.max(400, (window.innerHeight || 900) - 260);
+  let cachedWrapWidth = window.innerWidth || 1440;
+  let cachedScrollTop = 0;
+
+  function updateViewportMetrics() {
+    const winW = window.innerWidth || 1440;
+    const winH = window.innerHeight || 900;
+    cachedWrapWidth = winW;
+    if (winW > 640) {
+      cachedViewHeight = Math.max(360, winH - 260);
+      cachedScrollTop = tableWrapEl.scrollTop;
+    } else {
+      cachedViewHeight = winH;
+      const rect = tbodyEl.getBoundingClientRect();
+      cachedScrollTop = Math.max(0, -rect.top);
+    }
+  }
+
+  function unlockColumns() {
+    if (!lockedColKey) return;
+    lockedColKey = "";
+    tableEl.style.tableLayout = "";
+    const ths = tableEl.querySelectorAll("thead th");
+    for (let i = 0; i < ths.length; i++) ths[i].style.width = "";
+  }
+
+  function lockColumnsBeforeScroll() {
+    if (!currentRowsList.length) return;
+    const key = `${currentStation.id}|${currentShowMult ? 1 : 0}|${currentShowProd ? 1 : 0}|${currentShowRange ? 1 : 0}|${LANG}|${cachedWrapWidth}`;
+    if (key === lockedColKey) return;
+    lockedColKey = key;
+    const ths = tableEl.querySelectorAll("thead th");
+    const widths = [];
+    for (let i = 0; i < ths.length; i++) {
+      widths.push(ths[i].offsetWidth);
+    }
+    for (let i = 0; i < ths.length; i++) {
+      if (widths[i] > 0) ths[i].style.width = `${widths[i]}px`;
+    }
+    tableEl.style.tableLayout = "fixed";
+  }
+
+  function renderRowHtml(row, idx, station, showRange, noneText, fixedYieldText, fixedYieldTitle) {
+    const { p, work, rowKey, primaryName, secondaryName } = row;
+    const isRecipe = station.mode === "recipe";
+    const isAction = station.mode === "action";
+
+    let prod = noneText;
+    if (isRecipe) {
+      prod = `<div class="spval">×${(1 + work.mult / 100).toFixed(2)}</div><div class="hint2">+${work.mult}%</div>`;
+    } else if (isAction) {
+      prod = `<div class="spval">${fmtDuration(work.actionTime)}</div><div class="hint2">${esc(t("ssc_bw.calc.action.base", { ticks: work.baseTime }))}</div>`;
+    }
+
+    const typeTags = p.types.map(typePill).join("");
+    const role = station.id === "craft_station"
+      ? variantName(station, work.typeDef, work.variant)
+      : roleName(station, work.typeDef);
+    const expanded = state.expanded === rowKey;
+    const badgeHtml = badges(p);
+    const speedStatKey = work.variant.speedStat;
+    const speedStatLabel = esc(statName(speedStatKey));
+    const speedBase = p.baseStats[speedStatKey];
+    const speedTitle = esc(t("ssc_bw.tooltip.statZone", { stat: statName(speedStatKey), base: speedBase, value: work.speedValue }));
+
+    const multStatKey = work.variant.multStat;
+    let multCellInner;
+    let multCellTitle;
+    if (multStatKey) {
+      const multBase = p.baseStats[multStatKey];
+      multCellTitle = esc(t("ssc_bw.tooltip.statZone", { stat: statName(multStatKey), base: multBase, value: work.multValue }));
+      multCellInner = `<div class="statline"><span class="k">${esc(statName(multStatKey))}</span> ${multBase} / <b>${work.multValue}</b></div>`;
+    } else {
+      multCellTitle = fixedYieldTitle;
+      multCellInner = `<span class="fixed-yield">${fixedYieldText}</span>`;
+    }
+
+    let html = `<tr class="row-main${expanded ? " open" : ""}" data-key="${esc(rowKey)}" tabindex="0">
+      <td class="idx num">${idx + 1}</td>
+      <td>
+        <div class="zh">${esc(primaryName)}</div>
+        ${secondaryName ? `<div class="en">${esc(secondaryName)}</div>` : ""}
+        ${badgeHtml ? `<div class="badges">${badgeHtml}</div>` : ""}
+      </td>
+      <td>${typeTags}</td>
+      <td><span class="worktag">${esc(role)}</span></td>
+      <td class="num" data-col="speedStat" title="${speedTitle}">
+        <div class="statline"><span class="k">${speedStatLabel}</span> ${speedBase} / <b>${work.speedValue}</b></div>
+      </td>
+      <td class="num" data-col="multStat" title="${multCellTitle}">${multCellInner}</td>
+      <td class="num" data-col="speed"><span class="spval">×${work.speed.toFixed(2)}</span></td>
+      <td class="num" data-col="prod">${prod}</td>
+      <td class="num" data-col="range">${showRange ? fmtRange(work.range, station.mode) : noneText}</td>
+      <td class="num" data-col="score"><b>${work.score.toFixed(2)}</b></td>
+    </tr>`;
+    if (expanded) {
+      html += `<tr class="expandrow"><td colspan="${currentColCount}">${calcHtml(row)}</td></tr>`;
+    }
+    return html;
+  }
+
+  function renderViewport(force = false) {
+    const rows = currentRowsList;
+    const total = rows.length;
+    if (total === 0) {
+      if (force || renderedStart !== 0 || renderedEnd !== 0) {
+        tbodyEl.innerHTML = "";
+        renderedStart = 0;
+        renderedEnd = 0;
+      }
+      return;
+    }
+
+    const scrollTop = cachedScrollTop;
+    const viewHeight = cachedViewHeight;
+    const overscan = 14;
+    const firstVis = findRowIndexAtOffset(scrollTop);
+    const lastVis = findRowIndexAtOffset(scrollTop + viewHeight);
+    const visSpan = Math.max(12, lastVis - firstVis + 1);
+    const start = Math.max(0, Math.min(total - 1, firstVis - overscan));
+    const end = Math.min(total, Math.max(start + visSpan + overscan * 2, lastVis + 1 + overscan));
+
+    if (!force && start === renderedStart && end === renderedEnd) return;
+    renderedStart = start;
+    renderedEnd = end;
+
+    const station = currentStation;
+    const showRange = currentShowRange;
+    const noneText = esc(t("ssc_bw.table.none"));
+    const fixedYieldText = esc(t("ssc_bw.table.fixedYield"));
+    const fixedYieldTitle = esc(t("ssc_bw.table.fixedYieldTitle"));
+
+    const topPad = currentRowOffsets[start];
+    const botPad = currentRowOffsets[total] - currentRowOffsets[end];
+    let html = "";
+    if (topPad > 0) {
+      html += `<tr class="spacer-row" aria-hidden="true"><td colspan="${currentColCount}" style="height:${topPad}px"></td></tr>`;
+    }
+    for (let i = start; i < end; i++) {
+      html += renderRowHtml(rows[i], i, station, showRange, noneText, fixedYieldText, fixedYieldTitle);
+    }
+    if (botPad > 0) {
+      html += `<tr class="spacer-row" aria-hidden="true"><td colspan="${currentColCount}" style="height:${botPad}px"></td></tr>`;
+    }
+    tbodyEl.innerHTML = html;
+  }
+
+  function toggleRowExpand(rowEl) {
+    const key = rowEl.dataset.key;
+    const prevKey = state.expanded;
+    state.expanded = prevKey === key ? null : key;
+
+    const openRow = tbodyEl.querySelector("tr.row-main.open");
+    if (openRow) {
+      openRow.classList.remove("open");
+      const next = openRow.nextElementSibling;
+      if (next && next.classList.contains("expandrow")) next.remove();
+    }
+
+    if (state.expanded) {
+      const rowData = currentRowByKey.get(state.expanded);
+      if (rowData) {
+        rowEl.classList.add("open");
+        rowEl.insertAdjacentHTML(
+          "afterend",
+          `<tr class="expandrow"><td colspan="${currentColCount}">${calcHtml(rowData)}</td></tr>`
+        );
+      }
+    }
+  }
+
+  function render(debounceUrl = false) {
+    updateTabState();
+    updateControls();
+    const { station, rows, showMult } = currentRows();
+
+    const showProd = station.mode === "action" || showMult;
+    const showRange = station.mode !== "recipe";
+    const colCount = 4 + 1 + (showMult ? 1 : 0) + 1 + (showProd ? 1 : 0) + (showRange ? 1 : 0) + 1;
+
+    currentStation = station;
+    currentRowsList = rows;
+    currentShowMult = showMult;
+    currentShowProd = showProd;
+    currentShowRange = showRange;
+    currentColCount = colCount;
+    rebuildRowOffsets(rows, showProd);
+
+    tableEl.classList.toggle("hide-multStat", !showMult);
+    tableEl.classList.toggle("hide-prod", !showProd);
+    tableEl.classList.toggle("hide-range", !showRange);
+    const prodHead = $("prodHead");
+    if (prodHead.hidden !== !showProd) prodHead.hidden = !showProd;
+
+    const colKey = `${station.id}|${showMult ? 1 : 0}|${showProd ? 1 : 0}|${showRange ? 1 : 0}|${LANG}|${cachedWrapWidth}`;
+    if (colKey !== lockedColKey) unlockColumns();
+
+    renderViewport(true);
+
+    countEl.textContent = t("ssc_bw.count", { count: rows.length });
+    emptyEl.textContent = t("ssc_bw.empty");
+    emptyEl.hidden = rows.length > 0;
+
+    for (let i = 0; i < sortableThs.length; i++) {
+      const th = sortableThs[i];
+      th.classList.remove("asc", "desc");
+      const arrow = th.querySelector(".arrow");
+      if (th.dataset.k === state.sortKey) {
+        th.classList.add(state.sortDir === 1 ? "asc" : "desc");
+        arrow.textContent = state.sortDir === 1 ? "▲" : "▼";
+      } else {
+        arrow.textContent = "▼";
+      }
+    }
+
+    writeUrl(debounceUrl);
+  }
+
+  function buildTabs() {
+    $("tabs").innerHTML = D.stations
+      .map((s) => `<button class="tab" data-station="${esc(s.id)}">${esc(stationName(s))}</button>`)
+      .join("");
+    document.querySelectorAll(".tab").forEach((b) => {
+      b.addEventListener("click", () => {
+        state.station = b.dataset.station;
+        state.types = [];
+        state.works = [];
+        state.sortKey = "score";
+        state.sortDir = -1;
+        cachedScrollTop = 0;
+        tableWrapEl.scrollTop = 0;
+        render();
+      });
+    });
+  }
+
+  function updateTabState() {
+    document.querySelectorAll(".tab").forEach((b) => {
+      b.classList.toggle("on", b.dataset.station === state.station);
+    });
+  }
+
+  function applyStaticText() {
+    document.documentElement.lang = LANG === "zh" ? "zh-CN" : "en";
+    document.title = t("ssc_bw.page.title");
+    document.querySelectorAll("[data-i18n]").forEach((el) => {
+      el.textContent = t(el.dataset.i18n);
+    });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+      el.placeholder = t(el.dataset.i18nPlaceholder);
+    });
+    const langSelect = $("lang");
+    if (langSelect) langSelect.setAttribute("aria-label", t("ssc_bw.lang.label"));
+    const formSelect = $("formCategory");
+    if (formSelect) formSelect.setAttribute("aria-label", t("ssc_bw.formCategory.label"));
+    updateThemeButton();
+  }
+
+  function updateMeta() {
+    const meta = D.meta;
+    $("meta").innerHTML =
+      `<span>${esc(t("ssc_bw.meta.version"))} <b>${esc(meta.packVersion)}</b></span>` +
+      `<span>${esc(t("ssc_bw.meta.pokemon"))} ${esc(t("ssc_bw.meta.base", { count: meta.counts.base }))} + ` +
+      `${esc(t("ssc_bw.meta.forms", { count: meta.counts.forms }))}</span>` +
+      `<span>${esc(t("ssc_bw.meta.generated"))} <b>${esc(new Date(meta.generatedAt).toLocaleString(locale()))}</b></span>`;
+  }
+
+  function setLang(lang) {
+    if (!LANGS[lang]) lang = DEFAULT_LANG;
+    LANG = lang;
+    try { localStorage.setItem("ssc_bw.lang", lang); } catch (_) {}
+    const select = $("lang");
+    if (select) select.value = lang;
+    applyStaticText();
+    buildTabs();
+    buildNatureOptions();
+    buildFormCategoryOptions();
+    updateMeta();
+    render();
+  }
+
+  function bind() {
+    $("lang").addEventListener("change", (e) => setLang(e.target.value));
+    $("themeToggle").addEventListener("click", () => applyTheme(THEME === "dark" ? "light" : "dark"));
+    $("q").addEventListener("input", (e) => { state.q = e.target.value.trim(); render(true); });
+    $("level").addEventListener("change", (e) => { state.level = clampInt(e.target.value, 1, 100, 100); render(); });
+    $("iv").addEventListener("change", (e) => { state.iv = clampInt(e.target.value, 0, 31, 0); render(); });
+    $("ev").addEventListener("change", (e) => { state.ev = clampInt(e.target.value, 0, 252, 0); render(); });
+    $("nature").addEventListener("change", (e) => { state.nature = e.target.value; render(); });
+    $("shiny").addEventListener("change", (e) => { state.shiny = e.target.checked; render(); });
+
+    $("typeChips").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-type]");
+      if (!btn) return;
+      const id = btn.dataset.type;
+      if (id === "all" || state.types.includes(id)) {
+        state.types = [];
+        state.works = [];
+      } else {
+        state.types = [id];
+        state.works = [];
+      }
+      render();
+    });
+
+    $("variantChips").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-work]");
+      if (!btn) return;
+      const key = btn.dataset.work;
+      if (key === "all") {
+        state.works = [];
+      } else {
+        state.works = state.works.includes(key) ? [] : [key];
+        state.types = [key.split(":")[0]];
+      }
+      render();
+    });
+
+    $("formsChip").addEventListener("click", () => {
+      state.includeForms = !state.includeForms;
+      render();
+    });
+    $("formCategory").addEventListener("change", (e) => {
+      state.formCategory = e.target.value;
+      render();
+    });
+    document.querySelectorAll("[data-show]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.show;
+        state.shows = state.shows.includes(id)
+          ? state.shows.filter((x) => x !== id)
+          : [...state.shows, id];
+        render();
+      });
+    });
+
+    $("reset").addEventListener("click", () => {
+      Object.assign(state, DEFAULTS);
+      state.types = [];
+      state.works = [];
+      state.shows = [...ALL_SHOWS];
+      cachedScrollTop = 0;
+      tableWrapEl.scrollTop = 0;
+      render();
+    });
+
+    tbodyEl.addEventListener("click", (e) => {
+      if (window.getSelection && String(window.getSelection()).length > 0) return;
+      const row = e.target.closest("tr.row-main");
+      if (!row) return;
+      toggleRowExpand(row);
+    });
+    tbodyEl.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      const row = e.target.closest("tr.row-main");
+      if (!row) return;
+      e.preventDefault();
+      toggleRowExpand(row);
+    });
+
+    const onScroll = () => {
+      lockColumnsBeforeScroll();
+      updateViewportMetrics();
+      renderViewport(false);
+    };
+    tableWrapEl.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", () => {
+      updateViewportMetrics();
+      unlockColumns();
+      renderViewport(true);
+    }, { passive: true });
+
+    sortableThs.forEach((th) => {
+      th.addEventListener("click", () => {
+        const k = th.dataset.k;
+        if (state.sortKey === k) state.sortDir = -state.sortDir;
+        else {
+          state.sortKey = k;
+          state.sortDir = k === "name" || k === "dex" || k === "actionTime" ? 1 : -1;
+        }
+        render();
+      });
+    });
+  }
+
+  try {
+    const urlLang = new URLSearchParams(location.search).get("lang");
+    if (urlLang && LANGS[urlLang]) localStorage.setItem("ssc_bw.lang", urlLang);
+  } catch (_) {}
+
+  buildLangOptions();
+  buildTabs();
+  buildNatureOptions();
+  buildFormCategoryOptions();
+  readUrl();
+  bind();
+  applyStaticText();
+  updateMeta();
+  $("lang").value = LANG;
+  render();
+})();
+</script>
+</body>
+</html>

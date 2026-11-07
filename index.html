@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sunlit Cobblemon · Best Worker</title>
+  <script>
+    (function () {
+      var hasData = false;
+      try {
+        var imported = JSON.parse(localStorage.getItem("sunlit.imported") || "null");
+        hasData = Boolean(imported && imported.data);
+      } catch (_) {}
+      location.replace((hasData ? "./best-worker.html" : "./import.html") + location.search + location.hash);
+    })();
+  </script>
+</head>
+<body>
+  <p><a href="./best-worker.html">Open Sunlit Cobblemon · Best Worker</a></p>
+</body>
+</html>

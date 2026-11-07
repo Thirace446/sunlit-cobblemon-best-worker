@@ -1,0 +1,25 @@
+# Local cache and packaged artifacts (use GitHub Releases for zips)
+.cache/
+.testdata/
+release/
+.audit/
+
+# Generated game data: players import their own copy in the browser.
+# Keep data/lang.js tracked because it is the site's own UI language pack.
+data/all-data.js
+data/all-data.json
+data/pokemon.json
+data/stations.json
+data/meta.json
+data/warnings.json
+data/pokemon-names.js
+assets/cobblemon/lang/
+
+# Local-only documentation (keep locally, never commit)
+GUIDE.md
+AGENTS.md
+dev.md
+
+# OS junk
+.DS_Store
+Thumbs.db

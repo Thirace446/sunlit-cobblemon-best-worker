@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>导入整合包数据 · Sunlit Cobblemon · Best Worker</title>
+  <style>
+    :root{
+      color-scheme:light;
+      --bg:#f6f7f9;--card:#fff;--surface:#f1f3f7;--line:#e2e5ec;--line-soft:#eceef3;
+      --text:#111827;--text-2:#374151;--muted:#6b7280;--accent:#2563eb;--accent-soft:#eff4ff;
+      --accent-border:#bfdbfe;--good:#0f766e;--good-soft:#f0fdfa;--good-border:#99f6e4;
+      --warn:#b45309;--warn-soft:#fffbeb;--warn-border:#fde68a;--error:#991b1b;
+      --error-soft:#fef2f2;--error-border:#fecaca;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;background:var(--bg);color:var(--text);
+      font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+      padding:24px 16px 64px;
+    }
+    .wrap{max-width:920px;margin:0 auto}
+    header{margin-bottom:18px}
+    .header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    .lang-switch{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px;white-space:nowrap}
+    .lang-switch select{min-width:0;width:auto;padding:4px 8px}
+    h1{margin:0 0 6px;font-size:22px;letter-spacing:-.01em}
+    header p{margin:0;color:var(--muted);font-size:13px}
+    a{color:var(--accent)}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;margin:14px 0}
+    .notice{background:var(--warn-soft);border:1px solid var(--warn-border);color:var(--text-2);border-radius:8px;padding:12px 14px;font-size:12.5px;line-height:1.7}
+    .notice b{color:var(--text)}
+    h2{font-size:14px;margin:0 0 10px}
+    .row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+    label{color:var(--muted);font-size:12px;font-weight:500}
+    select,button,input{font:inherit}
+    select{min-width:300px;max-width:100%;background:#fff;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:7px 10px}
+    button,.btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:6px;
+      border:1px solid var(--line);background:var(--surface);color:var(--text-2);
+      border-radius:6px;padding:7px 13px;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;
+    }
+    button:hover,.btn:hover{border-color:#cbd1dc;color:var(--text)}
+    button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+    button.primary:hover{background:#1d4ed8;color:#fff}
+    button:disabled{opacity:.5;cursor:not-allowed}
+    .muted{color:var(--muted);font-size:12px}
+    .linkline{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-top:10px;font-size:12px}
+    .text-link{color:var(--accent);text-decoration:none}
+    .text-link:hover{text-decoration:underline}
+    .version-value{font-weight:600;color:var(--text)}
+    .mod-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .drop{
+      border:1.5px dashed var(--line);background:var(--surface);border-radius:8px;
+      padding:24px 16px;text-align:center;color:var(--muted);margin-top:12px;transition:.15s;
+    }
+    .drop.drag{border-color:var(--accent);background:var(--accent-soft);color:var(--text)}
+    .drop b{color:var(--text);font-weight:600}
+    .drop .hint{font-size:12px;margin-top:4px}
+    .files{margin-top:12px;display:flex;flex-direction:column;gap:6px}
+    .file{
+      display:flex;gap:10px;align-items:flex-start;justify-content:space-between;
+      padding:8px 10px;border:1px solid var(--line-soft);border-radius:6px;background:#fff;font-size:12.5px;
+    }
+    .file .name{font-weight:600;word-break:break-all}
+    .file .meta{color:var(--muted);font-size:11.5px;margin-top:2px;word-break:break-all}
+    .ok{color:var(--good);font-weight:600}
+    .bad{color:var(--error);font-weight:600}
+    .pending{color:var(--warn);font-weight:600}
+    .status{margin-top:12px;padding:10px 12px;border-radius:6px;background:var(--surface);border:1px solid var(--line-soft);font-size:12.5px;color:var(--text-2);white-space:pre-wrap;min-height:42px}
+    .status.error{background:var(--error-soft);border-color:var(--error-border);color:var(--error)}
+    .status.good{background:var(--good-soft);border-color:var(--good-border);color:var(--good)}
+    .actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+    .spinner{display:inline-block;width:12px;height:12px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-2px;margin-right:6px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    details{margin-top:10px;font-size:12px;color:var(--muted)}
+    summary{cursor:pointer;color:var(--text-2)}
+    code{background:var(--surface);border:1px solid var(--line-soft);border-radius:4px;padding:1px 5px;font-size:11.5px}
+    @media (max-width:640px){
+      body{padding:14px 10px 44px}
+      select{min-width:0;width:100%}
+      .card{padding:14px}
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="header-row">
+      <div>
+        <h1 data-i18n="ssc_bw.import.title">导入整合包数据</h1>
+        <p data-i18n="ssc_bw.import.subtitle">第一次使用时，从 CurseForge 下载整合包和两个模组，然后拖进这里。文件只会在你的浏览器里解析，不会上传。</p>
+      </div>
+      <label class="lang-switch">
+        <span data-i18n="ssc_bw.lang.label">Language</span>
+        <select id="lang" aria-label="Language"></select>
+      </label>
+    </div>
+  </header>
+
+  <div class="notice">
+    <b data-i18n="ssc_bw.import.notice.title">本站不托管、不分发游戏文件。</b><br>
+    <span data-i18n="ssc_bw.import.notice.body">所有下载链接都指向 CurseForge 官方 CDN；本站只提供查询页面和本地解析脚本。</span>
+  </div>
+
+  <div class="card">
+    <h2 data-i18n="ssc_bw.import.step1">1. 选择整合包版本并下载</h2>
+    <div class="row">
+      <label data-i18n="ssc_bw.import.version">整合包版本</label>
+      <b class="version-value" id="versionLabel">1.1.4-SSV4.1.5A</b>
+    </div>
+    <div class="linkline">
+      <a id="downloadPack" class="btn" href="https://mediafilez.forgecdn.net/files/8980/872/Society-Sunlit-Cobblemon-1.1.4-SSV4.1.5A.zip" target="_blank" rel="noopener noreferrer" data-i18n="ssc_bw.import.downloadPack">下载整合包 zip</a>
+      <a id="openPackPage" class="text-link" href="https://www.curseforge.com/minecraft/modpacks/society-sunlit-cobblemon/files/8980872" target="_blank" rel="noopener noreferrer" data-i18n="ssc_bw.import.openCf">CurseForge 页面</a>
+      <span class="muted" id="packSize">49.0 MB</span>
+    </div>
+    <div class="muted" style="margin-top:10px" data-i18n="ssc_bw.import.packHint">下载完成后，把 .zip 拖到下面的区域，或在区域里点击选择文件。</div>
+    <div class="drop" id="dropPack" tabindex="0">
+      <b data-i18n="ssc_bw.import.packDropTitle">把整合包 zip 拖到这里</b>
+      <div class="hint" data-i18n="ssc_bw.import.packDropHint">或点击选择文件（CurseForge 导出的 .zip）</div>
+      <input id="filePack" type="file" accept=".zip,application/zip" hidden>
+    </div>
+    <div class="files" id="packFiles"></div>
+  </div>
+
+  <div class="card">
+    <h2 data-i18n="ssc_bw.import.step2">2. 下载并导入两个模组 jar</h2>
+    <div class="muted" id="modHint" data-i18n="ssc_bw.import.modHintInitial">先导入整合包 zip，页面会从 manifest.json 读取需要的两个模组版本。</div>
+    <div class="files" id="modLinks"></div>
+    <div class="mod-actions">
+      <button class="primary" id="downloadMods" type="button" hidden data-i18n="ssc_bw.import.downloadMods">下载两个模组</button>
+    </div>
+    <div class="drop" id="dropJars" tabindex="0">
+      <b data-i18n="ssc_bw.import.jarDropTitle">把两个 .jar 拖到这里</b>
+      <div class="hint" data-i18n="ssc_bw.import.jarDropHint">也可以一次性把整合包 zip 和两个 jar 一起拖进来</div>
+      <input id="fileJars" type="file" accept=".jar,application/java-archive,.zip" multiple hidden>
+    </div>
+    <div class="files" id="jarFiles"></div>
+  </div>
+
+  <div class="card">
+    <h2 data-i18n="ssc_bw.import.step3">3. 解析并进入站点</h2>
+    <div class="status" id="status" data-i18n="ssc_bw.import.statusWaiting">等待导入文件…</div>
+    <div class="actions">
+      <button class="primary" id="parseBtn" disabled data-i18n="ssc_bw.import.parse">解析并进入站点</button>
+      <button id="clearBtn" type="button" data-i18n="ssc_bw.import.clear">清除已导入数据</button>
+      <a class="btn" href="best-worker.html" data-i18n="ssc_bw.import.enter">直接进入站点</a>
+    </div>
+    <details>
+      <summary data-i18n="ssc_bw.import.details">找不到文件？</summary>
+      <p data-i18n="ssc_bw.import.detailsP1">整合包 zip 通常在 CurseForge 下载目录；两个 jar 在整合包实例的 mods/ 文件夹里。</p>
+      <p data-i18n="ssc_bw.import.detailsP2">如果浏览器提示不支持解压，请使用最新版 Chrome、Edge 或 Firefox。</p>
+    </details>
+  </div>
+</div>
+
+<script src="data/lang.js"></script>
+<script type="module">
+  import { readZip } from "./assets/browser-zip.js";
+  import {
+    MODPACK_SLUG,
+    REQUIRED_MODS,
+    detectJarKind,
+    getProjectFile,
+    parseManifest,
+    buildFromArchives,
+  } from "./assets/import-pack.js";
+
+  const $ = (id) => document.getElementById(id);
+  const STORAGE_KEY = "sunlit.imported";
+  const UI_LANGUAGES = window.SSC_BW_LANGUAGES || [
+    { id: "en", locale: "en_us", label: "English", tag: "en" },
+    { id: "zh", locale: "zh_cn", label: "中文", tag: "zh-CN" },
+  ];
+  const LANG_DATA = window.SSC_BW_LANG || {};
+  const LANGS = Object.fromEntries(UI_LANGUAGES.map((language) => [language.id, language.locale]));
+  const DEFAULT_LANG = "en";
+  let LANG = readLang();
+
+  function readLang() {
+    try {
+      const fromUrl = new URLSearchParams(location.search).get("lang");
+      if (fromUrl && LANGS[fromUrl]) return fromUrl;
+    } catch (_) {}
+    try {
+      const saved = localStorage.getItem("ssc_bw.lang");
+      if (saved && LANGS[saved]) return saved;
+    } catch (_) {}
+    return DEFAULT_LANG;
+  }
+
+  function langTable(lang = LANG) {
+    return LANG_DATA[LANGS[lang]] || LANG_DATA.en_us || {};
+  }
+
+  function t(key, params) {
+    let text = langTable()[key];
+    if (text == null) text = langTable(DEFAULT_LANG)[key];
+    if (text == null) text = key;
+    if (!params) return String(text);
+    return String(text).replace(/\{(\w+)\}/g, (match, name) => (
+      params[name] == null ? match : String(params[name])
+    ));
+  }
+
+  function buildLangOptions() {
+    $("lang").innerHTML = UI_LANGUAGES
+      .map((language) => `<option value="${escapeHtml(language.id)}">${escapeHtml(language.label)}</option>`)
+      .join("");
+    $("lang").value = LANG;
+  }
+
+  function applyI18n() {
+    document.documentElement.lang = LANG === "zh" ? "zh-CN" : LANG === "ko" ? "ko-KR" : "en";
+    document.title = `${t("ssc_bw.import.title")} · Sunlit Cobblemon · Best Worker`;
+    document.querySelectorAll("[data-i18n]").forEach((el) => {
+      el.textContent = t(el.dataset.i18n);
+    });
+    $("downloadPack").textContent = t("ssc_bw.import.downloadPack");
+    $("openPackPage").textContent = t("ssc_bw.import.openCf");
+    $("downloadMods").textContent = t("ssc_bw.import.downloadMods");
+    $("parseBtn").textContent = t("ssc_bw.import.parse");
+    $("clearBtn").textContent = t("ssc_bw.import.clear");
+    buildLangOptions();
+  }
+
+  function setLang(lang) {
+    if (!LANGS[lang]) lang = DEFAULT_LANG;
+    LANG = lang;
+    try { localStorage.setItem("ssc_bw.lang", lang); } catch (_) {}
+    applyI18n();
+    renderPackFile();
+    renderModLinks();
+    renderJarFiles();
+    refreshStatus();
+  }
+  const SUPPORTED_PACK_VERSION = "1.1.4-SSV4.1.5A";
+  const FIXED_PACK = {
+    id: 8980872,
+    name: "Society-Sunlit-Cobblemon-1.1.4-SSV4.1.5A.zip",
+    filesize: 51418794,
+    downloadUrl: "https://mediafilez.forgecdn.net/files/8980/872/Society-Sunlit-Cobblemon-1.1.4-SSV4.1.5A.zip",
+    pageUrl: `https://www.curseforge.com/minecraft/modpacks/${MODPACK_SLUG}/files/8980872`,
+  };
+
+  const state = {
+    packFile: null,
+    packZip: null,
+    manifest: null,
+    mods: [],
+    sunlitFile: null,
+    sunlitZip: null,
+    farmersFile: null,
+    farmersZip: null,
+    busy: false,
+  };
+
+  function formatBytes(bytes) {
+    if (!bytes) return "";
+    const units = ["B", "KB", "MB", "GB"];
+    let value = bytes;
+    let index = 0;
+    while (value >= 1024 && index < units.length - 1) {
+      value /= 1024;
+      index++;
+    }
+    return `${value.toFixed(index ? 1 : 0)} ${units[index]}`;
+  }
+
+  function setStatus(text, kind = "") {
+    const el = $("status");
+    el.className = `status${kind ? ` ${kind}` : ""}`;
+    el.innerHTML = text;
+  }
+
+  function setBusy(busy, text) {
+    state.busy = busy;
+    $("parseBtn").disabled = busy || !canParse();
+    if (text) setStatus(text);
+  }
+
+  function canParse() {
+    return Boolean(state.packZip && state.sunlitZip && state.farmersZip);
+  }
+
+  function updateParseButton() {
+    $("parseBtn").disabled = state.busy || !canParse();
+  }
+
+  function escapeHtml(text) {
+    return String(text).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  }
+
+  function setupFixedPack() {
+    $("versionLabel").textContent = SUPPORTED_PACK_VERSION;
+    $("downloadPack").href = FIXED_PACK.downloadUrl;
+    $("downloadPack").setAttribute("download", FIXED_PACK.name);
+    $("openPackPage").href = FIXED_PACK.pageUrl;
+    $("packSize").textContent = formatBytes(FIXED_PACK.filesize);
+  }
+
+  function renderPackFile() {
+    const el = $("packFiles");
+    if (!state.packFile) {
+      el.innerHTML = "";
+      return;
+    }
+    const manifest = state.manifest;
+    const detail = manifest
+      ? `${escapeHtml(manifest.name || "")} · ${escapeHtml(manifest.version || "")} · ${escapeHtml(t("ssc_bw.import.modCount", { count: manifest.files.length }))}`
+      : "";
+    el.innerHTML = `<div class="file"><div><div class="name">${escapeHtml(state.packFile.name)}</div><div class="meta">${detail}</div></div><div class="ok">${escapeHtml(t("ssc_bw.import.loaded"))}</div></div>`;
+  }
+
+  function updateDownloadModsButton() {
+    const button = $("downloadMods");
+    button.hidden = !state.mods.length;
+    button.disabled = !state.mods.some((mod) => mod.downloadUrl || mod.pageUrl);
+  }
+
+  function renderModLinks() {
+    const el = $("modLinks");
+    updateDownloadModsButton();
+    if (!state.mods.length) {
+      el.innerHTML = "";
+      $("modHint").textContent = t("ssc_bw.import.modHintInitial");
+      return;
+    }
+    $("modHint").textContent = t("ssc_bw.import.modHintReady");
+    el.innerHTML = state.mods.map((mod) => {
+      const status = mod.downloadUrl
+        ? `<span class="ok">${escapeHtml(t("ssc_bw.import.modFound"))}</span>`
+        : `<span class="pending">${escapeHtml(t("ssc_bw.import.modManual"))}</span>`;
+      const size = mod.filesize ? ` · ${formatBytes(mod.filesize)}` : "";
+      return `<div class="file"><div><div class="name">${escapeHtml(mod.label)}</div><div class="meta">${escapeHtml(mod.name || mod.display || "")}${size}</div></div><div>${status}</div></div>`;
+    }).join("");
+  }
+
+  function renderJarFiles() {
+    const el = $("jarFiles");
+    const rows = [];
+    if (state.sunlitFile) {
+      rows.push(`<div class="file"><div><div class="name">${escapeHtml(state.sunlitFile.name)}</div><div class="meta">Sunlit Cobblebackported</div></div><div class="ok">${escapeHtml(t("ssc_bw.import.loaded"))}</div></div>`);
+    }
+    if (state.farmersFile) {
+      rows.push(`<div class="file"><div><div class="name">${escapeHtml(state.farmersFile.name)}</div><div class="meta">Cobblemon Farmers</div></div><div class="ok">${escapeHtml(t("ssc_bw.import.loaded"))}</div></div>`);
+    }
+    el.innerHTML = rows.join("");
+  }
+
+  function triggerDownload(url) {
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.target = "_blank";
+    anchor.rel = "noopener noreferrer";
+    anchor.download = "";
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+  }
+
+  function downloadMods() {
+    const ready = state.mods.filter((mod) => mod.downloadUrl);
+    const missing = state.mods.filter((mod) => !mod.downloadUrl && mod.pageUrl);
+    for (const mod of ready) triggerDownload(mod.downloadUrl);
+    for (const mod of missing) window.open(mod.pageUrl, "_blank", "noopener,noreferrer");
+  }
+
+  async function handleModpackFile(file) {
+    const buffer = await file.arrayBuffer();
+    const zip = await readZip(buffer);
+    if (!zip.has("manifest.json")) throw new Error(t("ssc_bw.import.errorNotModpack", { name: file.name }));
+    let parsed;
+    try {
+      parsed = await parseManifest(zip);
+    } catch (error) {
+      if (error.code === "missingMods") {
+        throw new Error(t("ssc_bw.import.errorMissingMods", { mods: (error.mods || []).join(", ") }));
+      }
+      throw error;
+    }
+    if (parsed.manifest.version !== SUPPORTED_PACK_VERSION) {
+      throw new Error(t("ssc_bw.import.errorUnsupportedVersion", {
+        supported: SUPPORTED_PACK_VERSION,
+        version: parsed.manifest.version || "unknown",
+      }));
+    }
+    state.packFile = file;
+    state.packZip = zip;
+    state.manifest = parsed.manifest;
+    state.mods = parsed.mods.map((mod) => ({ ...mod }));
+    renderPackFile();
+    renderModLinks();
+    updateParseButton();
+    setStatus(`${escapeHtml(t("ssc_bw.import.packLoaded", { name: parsed.manifest.name || file.name }))}<br>${escapeHtml(t("ssc_bw.import.lookup"))}`);
+    await loadModLinks();
+  }
+
+  async function loadModLinks() {
+    await Promise.all(state.mods.map(async (mod) => {
+      const meta = REQUIRED_MODS.find((item) => item.projectID === mod.projectID);
+      if (!meta) return;
+      try {
+        const file = await getProjectFile(meta.slug, mod.fileID);
+        if (file) {
+          Object.assign(mod, file);
+        }
+      } catch (_) {
+        // The CurseForge file page link is still shown below.
+      }
+    }));
+    state.mods = state.mods.map((mod) => {
+      if (!mod.pageUrl) {
+        mod.pageUrl = `https://www.curseforge.com/minecraft/mc-mods/${mod.slug}/files/${mod.fileID}`;
+      }
+      return mod;
+    });
+    renderModLinks();
+    setStatus(t("ssc_bw.import.modHintReady"));
+  }
+
+  async function handleJarFile(file) {
+    const buffer = await file.arrayBuffer();
+    const zip = await readZip(buffer);
+    const kind = detectJarKind(zip);
+    if (kind === "sunlit") {
+      state.sunlitFile = file;
+      state.sunlitZip = zip;
+    } else if (kind === "farmers") {
+      state.farmersFile = file;
+      state.farmersZip = zip;
+    } else {
+      throw new Error(t("ssc_bw.import.errorUnknownJar", { name: file.name }));
+    }
+    renderJarFiles();
+    updateParseButton();
+  }
+
+  async function handleFiles(files) {
+    if (state.busy) return;
+    for (const file of files) {
+      const lower = file.name.toLowerCase();
+      try {
+        setStatus(escapeHtml(t("ssc_bw.import.reading", { name: file.name })));
+        if (lower.endsWith(".zip")) {
+          await handleModpackFile(file);
+        } else if (lower.endsWith(".jar")) {
+          await handleJarFile(file);
+        }
+      } catch (error) {
+        setStatus(escapeHtml(error.message || String(error)), "error");
+      }
+    }
+    if (canParse()) {
+      setStatus(escapeHtml(t("ssc_bw.import.allRead")), "good");
+    }
+  }
+
+  async function parseAndImport() {
+    if (!canParse() || state.busy) return;
+    setBusy(true, `<span class="spinner"></span>${escapeHtml(t("ssc_bw.import.parsing"))}`);
+    try {
+      const result = await buildFromArchives({
+        modpackZip: state.packZip,
+        sunlitZip: state.sunlitZip,
+        farmersZip: state.farmersZip,
+        modpackFile: state.packFile,
+        sunlitFile: state.sunlitFile,
+        farmersFile: state.farmersFile,
+      });
+      const payload = {
+        schema: 1,
+        importedAt: new Date().toISOString(),
+        source: {
+          pack: result.summary.pack,
+          version: result.summary.version,
+          modpack: state.packFile.name,
+          sunlit: state.sunlitFile.name,
+          farmers: state.farmersFile.name,
+        },
+        data: result.data,
+        pokemonNames: result.pokemonNames,
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      setStatus(t("ssc_bw.import.done", { base: result.summary.base, forms: result.summary.forms }), "good");
+      location.href = "best-worker.html";
+    } catch (error) {
+      console.error(error);
+      const message = String(error.message || error);
+      if (error.code === "missingMods") {
+        setStatus(t("ssc_bw.import.errorMissingMods", { mods: (error.mods || []).join(", ") }), "error");
+      } else if (/quota|storage/i.test(message)) {
+        setStatus(t("ssc_bw.import.errorQuota"), "error");
+      } else {
+        setStatus(escapeHtml(message), "error");
+      }
+      setBusy(false);
+    }
+  }
+
+  function hasImportedData() {
+    try {
+      const imported = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+      return Boolean(imported && imported.data);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function refreshStatus() {
+    if (state.busy) {
+      setStatus(`<span class="spinner"></span>${escapeHtml(t("ssc_bw.import.parsing"))}`);
+    } else if (canParse()) {
+      setStatus(escapeHtml(t("ssc_bw.import.allRead")), "good");
+    } else if (hasImportedData()) {
+      renderExistingImport();
+    } else if (state.mods.length) {
+      setStatus(t("ssc_bw.import.modHintReady"));
+    } else {
+      setStatus(t("ssc_bw.import.statusWaiting"));
+    }
+  }
+
+  function clearImported() {
+    try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+    setStatus(t("ssc_bw.import.cleared"), "good");
+    renderExistingImport();
+  }
+
+  function renderExistingImport() {
+    let imported = null;
+    try { imported = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null"); } catch (_) {}
+    if (!imported || !imported.data) return;
+    const meta = imported.data.meta || {};
+    setStatus(t("ssc_bw.import.existing", {
+      pack: meta.pack || "",
+      version: meta.packVersion || "",
+    }), "good");
+  }
+
+  function bindDrop(zone, input) {
+    const open = () => { if (!state.busy) input.click(); };
+    zone.addEventListener("click", open);
+    zone.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        open();
+      }
+    });
+    input.addEventListener("change", () => {
+      const files = [...input.files];
+      input.value = "";
+      handleFiles(files);
+    });
+    for (const type of ["dragenter", "dragover"]) {
+      zone.addEventListener(type, (event) => {
+        event.preventDefault();
+        zone.classList.add("drag");
+      });
+    }
+    for (const type of ["dragleave", "drop"]) {
+      zone.addEventListener(type, (event) => {
+        event.preventDefault();
+        zone.classList.remove("drag");
+      });
+    }
+    zone.addEventListener("drop", (event) => {
+      const files = [...(event.dataTransfer?.files || [])];
+      handleFiles(files);
+    });
+  }
+
+  $("lang").addEventListener("change", (event) => setLang(event.target.value));
+  $("downloadMods").addEventListener("click", downloadMods);
+  $("parseBtn").addEventListener("click", parseAndImport);
+  $("clearBtn").addEventListener("click", clearImported);
+  bindDrop($("dropPack"), $("filePack"));
+  bindDrop($("dropJars"), $("fileJars"));
+
+  buildLangOptions();
+  applyI18n();
+  setupFixedPack();
+  renderExistingImport();
+  updateParseButton();
+  updateDownloadModsButton();
+  window.__importReady = true;
+</script>
+<script>
+  setTimeout(function () {
+    if (window.__importReady) return;
+    var el = document.getElementById("status");
+    if (!el) return;
+    var locale = { en: "en_us", zh: "zh_cn", ko: "ko_kr" };
+    var lang = "en";
+    try { lang = localStorage.getItem("ssc_bw.lang") || "en"; } catch (_) {}
+    var table = (window.SSC_BW_LANG && window.SSC_BW_LANG[locale[lang] || "en_us"]) ||
+      (window.SSC_BW_LANG && window.SSC_BW_LANG.en_us) || {};
+    el.className = "status error";
+    el.textContent = table["ssc_bw.import.errorScript"] || "Failed to load the import script. Check assets/ and scripts/station-rules.js.";
+  }, 6000);
+</script>
+</body>
+</html>
