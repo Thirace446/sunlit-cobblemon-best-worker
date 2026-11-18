@@ -379,7 +379,7 @@
           <th><span class="th-label" data-i18n="ssc_bw.table.recipeType">Recipe Type</span></th>
           <th class="num sortable" data-col="speedStat" data-k="speedStat"><span class="th-label" data-i18n="ssc_bw.table.speedStat">Speed Zone (Base Stat / Stat Value)</span><span class="arrow">▼</span></th>
           <th class="num sortable" data-col="multStat" data-k="multStat"><span class="th-label" data-i18n="ssc_bw.table.multStat">Yield Zone (Base Stat / Stat Value)</span><span class="arrow">▼</span></th>
-          <th class="num sortable" data-col="speed" data-k="speed"><span class="th-label" data-i18n="ssc_bw.table.speed">Speed Multiplier</span><span class="arrow">▼</span></th>
+          <th class="num sortable" data-col="speed" data-k="speed"><span class="th-label" id="speedHead" data-i18n="ssc_bw.table.speed">Speed Multiplier</span><span class="arrow">▼</span></th>
           <th class="num sortable" data-col="prod" data-k="mult" id="prodHead"><span class="th-label" data-i18n="ssc_bw.table.expectedYield">Expected Yield</span><span class="arrow">▼</span></th>
           <th class="num sortable" data-col="range" data-k="range"><span class="th-label" data-i18n="ssc_bw.table.range">Range</span><span class="arrow">▼</span></th>
           <th class="num sortable" data-col="score" data-k="score"><span class="th-label" data-i18n="ssc_bw.table.score">Score</span><span class="arrow">▼</span></th>
@@ -1623,6 +1623,9 @@
     if ($("shiny").checked !== state.shiny) $("shiny").checked = state.shiny;
     updateBonusControls(station);
 
+    const speedHead = $("speedHead");
+    speedHead.textContent = t(station.mode === "buff" ? "ssc_bw.table.refreshSpeed" : "ssc_bw.table.speed");
+
     if (typeChipsKey !== builtNoteKey) {
       builtNoteKey = typeChipsKey;
       const head = $("prodHead");
@@ -1645,7 +1648,7 @@
         (station.mode === "action"
           ? esc(t("ssc_bw.note.action"))
           : station.mode === "buff"
-            ? esc(t("ssc_bw.note.buff"))
+            ? `${esc(t("ssc_bw.note.buff"))}<br>${esc(t("ssc_bw.note.buffSpeed"))}`
             : "");
     }
   }
