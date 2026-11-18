@@ -217,7 +217,7 @@
   .bonus-title-row{display:flex;align-items:center;gap:8px;color:var(--text-2);font-size:calc(13px * var(--text-scale));font-weight:600}
   .bonus-grid{display:flex;flex-wrap:wrap;gap:8px 16px;padding:8px 0 2px}
   .bonus-grid .field{gap:8px}
-  .bonus-grid select{max-width:300px}
+  .bonus-grid select{max-width:360px}
   .bonus-na{color:var(--muted);font-size:calc(12px * var(--text-scale));font-style:italic;padding:4px 2px}
   .bonus-state{margin-left:auto;color:var(--accent-ink);font-size:calc(12px * var(--text-scale));font-weight:500}
   .bonus-hint{margin:0;color:var(--muted);font-size:calc(12.5px * var(--text-scale));font-weight:500}
@@ -298,7 +298,7 @@
     </div>
     <div class="title-line">
       <h1 data-i18n="ssc_bw.page.heading">Sunlit Cobblemon · Best Worker</h1>
-      <span class="site-version" title="Site version">v1.3.1</span>
+      <span class="site-version" title="Site version">v1.3.2</span>
     </div>
     <p data-i18n="ssc_bw.page.subtitle">List every Pokémon that can work at a workstation, sorted and filtered by the station's actual formulas.</p>
     <div class="meta" id="meta"></div>
@@ -406,6 +406,7 @@
 </div>
 
 <script src="data/lang.js"></script>
+<script src="assets/crystal-ball-gems.js"></script>
 <script>
 (function () {
   // 1.2.0+ supports a locally imported data pack. The bundled data files are
@@ -452,6 +453,22 @@
     "fighting", "poison", "ground", "flying", "psychic", "bug",
     "rock", "ghost", "dragon", "dark", "steel", "fairy",
   ];
+  const FALLBACK_CRYSTAL_BALL_GEMS = [
+    { id: "amethyst_shard", item: "minecraft:amethyst_shard", bonusChance: 0.08, consumeChance: 1, affectedTypes: ["fairy", "psychic", "ghost"] },
+    { id: "prismarine_crystals", item: "minecraft:prismarine_crystals", bonusChance: 0.08, consumeChance: 1, affectedTypes: ["water", "ice", "grass"] },
+    { id: "emerald", item: "minecraft:emerald", bonusChance: 0.12, consumeChance: 1, affectedTypes: ["dark", "dragon", "fighting"] },
+    { id: "diamond", item: "minecraft:diamond", bonusChance: 0.15, consumeChance: 0.4, affectedTypes: [] },
+    ...TYPE_GEM_IDS.map((type) => ({
+      id: `${type}_gem`,
+      item: `cobblemon:${type}_gem`,
+      bonusChance: 0.25,
+      consumeChance: 0.5,
+      affectedTypes: [type],
+    })),
+  ];
+  const CRYSTAL_BALL_GEMS = (window.SSC_CRYSTAL_BALL_GEMS && window.SSC_CRYSTAL_BALL_GEMS.length)
+    ? window.SSC_CRYSTAL_BALL_GEMS
+    : FALLBACK_CRYSTAL_BALL_GEMS;
   const EXTERNAL_BONUSES = {
     energyPylon: {
       appliesToStations: ["craft_station", "gardening_station", "mystery_mine", "crystal_ball", "energy_pylon"],
@@ -466,31 +483,21 @@
     },
     crystalBall: {
       appliesToStations: ["craft_station", "mystery_mine"],
-      gems: [
-        { id: "amethyst_shard", item: "minecraft:amethyst_shard", bonusChance: 0.08, consumeChance: 1, affectedTypes: ["fairy", "psychic", "ghost"] },
-        { id: "prismarine_crystals", item: "minecraft:prismarine_crystals", bonusChance: 0.08, consumeChance: 1, affectedTypes: ["water", "ice", "grass"] },
-        { id: "emerald", item: "minecraft:emerald", bonusChance: 0.12, consumeChance: 1, affectedTypes: ["dark", "dragon", "fighting"] },
-        { id: "diamond", item: "minecraft:diamond", bonusChance: 0.15, consumeChance: 0.4, affectedTypes: [] },
-        ...TYPE_GEM_IDS.map((type) => ({
-          id: `${type}_gem`,
-          item: `cobblemon:${type}_gem`,
-          bonusChance: 0.25,
-          consumeChance: 0.5,
-          affectedTypes: [type],
-        })),
-      ],
+      gems: CRYSTAL_BALL_GEMS,
     },
   };
   const BATTERY_BY_ID = Object.fromEntries(
     EXTERNAL_BONUSES.energyPylon.batteries.map((battery) => [battery.id, battery])
   );
-  const GEM_BY_ID = Object.fromEntries(
-    EXTERNAL_BONUSES.crystalBall.gems.map((gem) => [gem.id, gem])
-  );
+  const GEM_BY_ID = Object.fromEntries(CRYSTAL_BALL_GEMS.map((gem) => [gem.id, gem]));
+  const GEM_BY_ITEM = Object.fromEntries(CRYSTAL_BALL_GEMS.map((gem) => [gem.item, gem]));
   const TYPE_GEM_CHOICE = "type_gem";
-  const COMMON_GEMS = EXTERNAL_BONUSES.crystalBall.gems.filter(
-    (gem) => !(gem.affectedTypes.length === 1 && gem.id === `${gem.affectedTypes[0]}_gem`)
-  );
+  const LEGACY_GEM_ALIASES = {
+    amethyst_shard: "minecraft:amethyst_shard",
+    prismarine_crystals: "minecraft:prismarine_crystals",
+    emerald: "minecraft:emerald",
+    diamond: "minecraft:diamond",
+  };
 
   function langTable(lang = LANG) {
     return LANG_DATA[LANGS[lang]] || LANG_DATA.en_us || {};
@@ -551,10 +558,46 @@
   }
 
   function gemLabel(gem) {
+    if (gem.name) {
+      return gem.name[dataLangKey()] || gem.name.en_us || gem.id;
+    }
     if (gem.affectedTypes.length === 1 && gem.id === `${gem.affectedTypes[0]}_gem`) {
       return t("ssc_bw.bonus.typeGem", { type: typeName(gem.affectedTypes[0]) });
     }
     return t(`ssc_bw.bonus.gem.${gem.id}`, null, gem.id);
+  }
+
+  let gemOptionsKey = "";
+
+  function gemSupportsType(gem, typeId) {
+    return !typeId || gem.affectedTypes.length === 0 || gem.affectedTypes.includes(typeId);
+  }
+
+  function buildGemOptions(force = false) {
+    const typeId = state.types[0] || "";
+    const key = `${LANG}|${typeId}`;
+    if (!force && key === gemOptionsKey) return;
+    gemOptionsKey = key;
+    const list = CRYSTAL_BALL_GEMS.filter((gem) => gemSupportsType(gem, typeId));
+    const groups = new Map();
+    for (const gem of list) {
+      const pct = Math.round(gem.bonusChance * 100);
+      if (!groups.has(pct)) groups.set(pct, []);
+      groups.get(pct).push(gem);
+    }
+    const groupedOptions = [...groups.entries()]
+      .sort((a, b) => b[0] - a[0])
+      .map(([pct, gems]) => {
+        const options = gems
+          .slice()
+          .sort((a, b) => gemLabel(a).localeCompare(gemLabel(b)))
+          .map((gem) => `<option value="${esc(gem.id)}">${esc(gemLabel(gem))}</option>`)
+          .join("");
+        return `<optgroup label="+${pct}%">${options}</optgroup>`;
+      })
+      .join("");
+    $("gem").innerHTML = `<option value="">${esc(t("ssc_bw.bonus.none"))}</option>` + groupedOptions;
+    if (state.gem && !list.some((gem) => gem.id === state.gem)) state.gem = "";
   }
 
   function buildBonusOptions() {
@@ -562,10 +605,8 @@
     $("battery").innerHTML = none + EXTERNAL_BONUSES.energyPylon.batteries
       .map((battery) => `<option value="${esc(battery.id)}">${esc(batteryLabel(battery))} (${esc(fmtSpeedBonus(battery.bonusSpeed))})</option>`)
       .join("");
-    $("gem").innerHTML = none + COMMON_GEMS
-      .map((gem) => `<option value="${esc(gem.id)}">${esc(gemLabel(gem))} (+${(gem.bonusChance * 100).toFixed(0)}%)</option>`)
-      .join("") +
-      `<option value="${TYPE_GEM_CHOICE}">${esc(t("ssc_bw.bonus.typeGemAuto"))} (+25%)</option>`;
+    gemOptionsKey = "";
+    buildGemOptions(true);
   }
 
   function selectionHasYield(station) {
@@ -598,24 +639,23 @@
     const typeId = state.types[0] || "";
     const gem = selectedGemFor(typeId);
     const gemMatches = Boolean(
-      crystalOk && (
-        state.gem === TYPE_GEM_CHOICE
-          ? (typeId ? Boolean(gem) : true)
-          : gem && (gem.affectedTypes.length === 0 || !typeId || gem.affectedTypes.includes(typeId))
-      )
+      crystalOk && gem && (gem.affectedTypes.length === 0 || !typeId || gem.affectedTypes.includes(typeId))
+    );
+    const availableTypes = typeId
+      ? [typeId]
+      : state.works[0]
+        ? [state.works[0].split(":")[0]]
+        : station.types.map((typeDef) => typeDef.id);
+    const gemAffectsAny = Boolean(
+      gem && (gem.affectedTypes.length === 0 || gem.affectedTypes.some((type) => availableTypes.includes(type)))
     );
 
     const active = [];
     if (energyOk && state.battery && BATTERY_BY_ID[state.battery]) {
       active.push(batteryLabel(BATTERY_BY_ID[state.battery]));
     }
-    if (crystalOk) {
-      if (state.gem === TYPE_GEM_CHOICE) {
-        if (typeId && gem) active.push(gemLabel(gem));
-        else active.push(t("ssc_bw.bonus.typeGemAuto"));
-      } else if (gemMatches) {
-        active.push(gemLabel(gem));
-      }
+    if (crystalOk && gemMatches) {
+      active.push(gemLabel(gem));
     }
     $("bonusState").textContent = active.join(" · ");
 
@@ -626,8 +666,10 @@
     else if (crystalOk) hint = t("ssc_bw.bonus.crystalOnly");
     else if (crystalStationOk && !crystalHasYield) hint = t("ssc_bw.bonus.noYield");
     else hint = t("ssc_bw.bonus.noneApply");
-    if (crystalOk && state.gem !== TYPE_GEM_CHOICE && gem && !gemMatches && typeId) {
+    if (crystalOk && gem && !gemMatches && typeId) {
       hint += ` ${t("ssc_bw.bonus.gemMismatch")}`;
+    } else if (crystalOk && gem && !gemAffectsAny) {
+      hint += ` ${t("ssc_bw.bonus.gemNoStationType")}`;
     }
     $("bonusHint").innerHTML = boldColonText(hint);
   }
@@ -893,12 +935,15 @@
       if (p.get("battery") && BATTERY_BY_ID[p.get("battery")]) state.battery = p.get("battery");
       const gemParam = p.get("gem");
       if (gemParam === TYPE_GEM_CHOICE) {
-        state.gem = TYPE_GEM_CHOICE;
-      } else if (gemParam && GEM_BY_ID[gemParam]) {
-        // Old links could point at a specific type gem; fold them into the
-        // single auto-matching option.
-        state.gem = gemParam.endsWith("_gem") ? TYPE_GEM_CHOICE : gemParam;
+        const typeParam = p.get("type") || state.types[0] || "";
+        if (TYPE_GEM_IDS.includes(typeParam)) state.gem = `cobblemon:${typeParam}_gem`;
+      } else if (gemParam) {
+        const legacy = LEGACY_GEM_ALIASES[gemParam] || (gemParam.endsWith("_gem") ? `cobblemon:${gemParam}` : "");
+        const candidate = GEM_BY_ID[gemParam] ? gemParam : legacy;
+        if (candidate && GEM_BY_ID[candidate]) state.gem = candidate;
       }
+      const selectedGem = GEM_BY_ID[state.gem] || GEM_BY_ITEM[state.gem];
+      if (selectedGem) state.gem = selectedGem.id;
       if (p.has("show")) state.shows = p.get("show") ? p.get("show").split(",").filter(Boolean) : [];
       // 兼容旧链接：exclude=legendary 表示“除了传说都显示”
       if (p.has("exclude")) {
@@ -1076,11 +1121,10 @@
   }
 
   function findGem(id) {
-    return id ? GEM_BY_ID[id] || null : null;
+    return id ? GEM_BY_ID[id] || GEM_BY_ITEM[id] || null : null;
   }
 
   function selectedGemFor(typeId) {
-    if (state.gem === TYPE_GEM_CHOICE) return findGem(`${typeId}_gem`);
     return findGem(state.gem);
   }
 
@@ -1524,14 +1568,18 @@
       const workType = state.works[0].split(":")[0];
       if (!state.types.length || state.types[0] !== workType) state.types = [workType];
     }
+    if (!state.types.length) state.types = [station.types[0].id];
+    if (!state.works.length) {
+      const typeOptions = options.filter((opt) => opt.typeDef.id === state.types[0]);
+      if (typeOptions.length) state.works = [typeOptions[0].key];
+    }
+    buildGemOptions();
 
     const typeChipsKey = `${station.id}|${LANG}`;
     const typeChipsEl = $("typeChips");
     if (typeChipsKey !== builtTypeChipsKey) {
       builtTypeChipsKey = typeChipsKey;
-      typeChipsEl.innerHTML =
-        `<button type="button" class="chip" data-type="all">${esc(t("ssc_bw.filter.all"))}</button>` +
-        station.types
+      typeChipsEl.innerHTML = station.types
           .map((typeDef) => {
             const color = TYPE_COLORS[typeDef.id] || "#999";
             const name = typeName(typeDef.id);
@@ -1544,7 +1592,7 @@
     for (let i = 0; i < typeBtns.length; i++) {
       const btn = typeBtns[i];
       const id = btn.dataset.type;
-      btn.classList.toggle("on", id === "all" ? !activeTypeId : id === activeTypeId);
+      btn.classList.toggle("on", id === activeTypeId);
     }
 
     const activeType = activeTypeId ? station.types.find((typeDef) => typeDef.id === activeTypeId) || null : null;
@@ -1561,21 +1609,19 @@
       const visibleOptions = activeTypeId
         ? options.filter((o) => o.typeDef.id === activeTypeId)
         : [];
-      variantChipsEl.innerHTML =
-        `<button type="button" class="chip" data-work="all">${esc(t("ssc_bw.filter.allRecipes"))}</button>` +
-        visibleOptions
-          .map((o) => {
-            const label = variantLabel(o);
-            return `<button type="button" class="chip" data-work="${esc(o.key)}" title="${esc(workLabel(o, true))}">${esc(label)}</button>`;
-          })
-          .join("");
+      variantChipsEl.innerHTML = visibleOptions
+        .map((o) => {
+          const label = variantLabel(o);
+          return `<button type="button" class="chip" data-work="${esc(o.key)}" title="${esc(workLabel(o, true))}">${esc(label)}</button>`;
+        })
+        .join("");
     }
     const activeWorkKey = state.works[0] || "";
     const varBtns = variantChipsEl.children;
     for (let i = 0; i < varBtns.length; i++) {
       const btn = varBtns[i];
       const key = btn.dataset.work;
-      btn.classList.toggle("on", key === "all" ? !activeWorkKey : key === activeWorkKey);
+      btn.classList.toggle("on", key === activeWorkKey);
     }
 
     const hasForms = Boolean(state.formOnly) || state.formCategories.length > 0;
@@ -1752,10 +1798,15 @@
     const { p, work, rowKey, primaryName, secondaryName } = row;
     const isRecipe = station.mode === "recipe";
     const isAction = station.mode === "action";
+    const hasBonus = Boolean(work.appliedBattery || work.appliedGem);
+    const gainPct = work.baseScore > 0 ? (work.score / work.baseScore - 1) * 100 : 0;
 
     let prod = noneText;
     if (isRecipe) {
-      prod = `<div class="spval">×${(1 + work.mult / 100).toFixed(2)}</div><div class="hint2">+${work.mult}%</div>`;
+      const chanceText = work.appliedGem
+        ? t("ssc_bw.table.chanceRange", { base: work.baseMult, value: work.mult })
+        : t("ssc_bw.table.chanceShort", { value: work.mult });
+      prod = `<div class="spval">×${(1 + work.mult / 100).toFixed(2)}</div><div class="hint2">${esc(chanceText)}</div>`;
     } else if (isAction) {
       prod = `<div class="spval">${fmtDuration(work.actionTime)}</div><div class="hint2">${esc(t("ssc_bw.calc.action.base", { ticks: work.baseTime }))}</div>`;
     }
@@ -1767,8 +1818,6 @@
       : roleName(station, work.typeDef);
     const expanded = state.expanded === rowKey;
     const badgeHtml = badges(p);
-    const hasBonus = Boolean(work.appliedBattery || work.appliedGem);
-    const gainPct = work.baseScore > 0 ? (work.score / work.baseScore - 1) * 100 : 0;
     const speedStatKey = work.variant.speedStat;
     const speedStatLabel = esc(statName(speedStatKey));
     const speedBase = p.baseStats[speedStatKey];
@@ -2020,13 +2069,9 @@
       const btn = e.target.closest("button[data-type]");
       if (!btn) return;
       const id = btn.dataset.type;
-      if (id === "all" || state.types.includes(id)) {
-        state.types = [];
-        state.works = [];
-      } else {
-        state.types = [id];
-        state.works = [];
-      }
+      if (state.types[0] === id) return;
+      state.types = [id];
+      state.works = [];
       render();
     });
 
@@ -2034,12 +2079,9 @@
       const btn = e.target.closest("button[data-work]");
       if (!btn) return;
       const key = btn.dataset.work;
-      if (key === "all") {
-        state.works = [];
-      } else {
-        state.works = state.works.includes(key) ? [] : [key];
-        state.types = [key.split(":")[0]];
-      }
+      if (state.works[0] === key) return;
+      state.works = [key];
+      state.types = [key.split(":")[0]];
       render();
     });
 
