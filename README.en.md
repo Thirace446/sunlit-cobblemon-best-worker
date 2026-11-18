@@ -16,6 +16,7 @@ Pure static HTML with no backend or database. Player data is parsed and stored l
 
 - Find the best Pokémon for the Craft Station, Gardening Station, Mystery Mine, Crystal Ball, and Energy Pylon
 - Filter by Pokémon Type, Actual Role, and Recipe Type
+- Favorite Pokémon and pin them to the top
 - Simulate Level, Individual Value (IV), Effort Value (EV), Nature, and Shiny
 - Simulate external bonuses from Energy Pylon batteries and Crystal Ball gems
 - Filter special forms and Legendary / Mythical / Ultra Beast / Paradox with toggleable tags and "only" mode

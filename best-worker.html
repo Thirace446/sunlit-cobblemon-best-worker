@@ -153,6 +153,8 @@
   .meta-bar{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin:12px 2px 6px;flex-wrap:wrap}
   .meta-bar .count{font-weight:600;font-size:calc(13px * var(--text-scale))}
   .meta-bar .hint{color:var(--muted);font-size:calc(12px * var(--text-scale))}
+  .fav-head{width:34px;text-align:center}
+  td.fav-cell{width:34px;text-align:center;padding-left:4px;padding-right:4px}
   .tablewrap{overflow:auto;max-height:calc(100vh - 40px);border-radius:8px;scrollbar-gutter:stable}
   .tablecard{border-radius:8px}
   .tablecard thead th:first-child{border-top-left-radius:7px}
@@ -212,6 +214,12 @@
   .filters{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;padding-top:2px;border-top:1px solid var(--line-soft)}
   .filters.special-row{border-top:0;padding-top:0}
   .dex{color:var(--muted);font-size:calc(11px * var(--text-scale));font-family:var(--mono);font-weight:500;margin-left:4px;white-space:nowrap}
+  .fav{
+    font:inherit;font-size:calc(14px * var(--text-scale));line-height:1;border:0;background:transparent;
+    color:var(--idx);cursor:pointer;padding:0 2px;margin-left:2px;vertical-align:middle;
+  }
+  .fav:hover{color:var(--warn)}
+  .fav.on{color:var(--warn)}
   .pill.muted{filter:grayscale(1);opacity:.35}
   .bonus-panel{border-top:1px solid var(--line-soft);padding-top:6px}
   .bonus-title-row{display:flex;align-items:center;gap:8px;color:var(--text-2);font-size:calc(13px * var(--text-scale));font-weight:600}
@@ -298,7 +306,7 @@
     </div>
     <div class="title-line">
       <h1 data-i18n="ssc_bw.page.heading">Sunlit Cobblemon · Best Worker</h1>
-      <span class="site-version" title="Site version">v1.3.2</span>
+      <span class="site-version" title="Site version">v1.3.3</span>
     </div>
     <p data-i18n="ssc_bw.page.subtitle">List every Pokémon that can work at a workstation, sorted and filtered by the station's actual formulas.</p>
     <div class="meta" id="meta"></div>
@@ -373,6 +381,7 @@
     <table>
       <thead>
         <tr>
+          <th class="fav-head" aria-hidden="true">★</th>
           <th class="num" data-k="rank"><span class="th-label" data-i18n="ssc_bw.table.rank">#</span></th>
           <th class="sortable" data-k="name"><span class="th-label" data-i18n="ssc_bw.table.pokemon">Pokémon</span><span class="arrow">▼</span></th>
           <th><span class="th-label" data-i18n="ssc_bw.table.types">Pokémon Type</span></th>
@@ -876,7 +885,7 @@
     battery: "",
     gem: "",
     specialOnly: false,
-    shows: [...ALL_SHOWS],
+    shows: [],
     expanded: null,
     sortKey: "score",
     sortDir: -1,
@@ -889,8 +898,33 @@
     textSize: document.documentElement.dataset.textSize || "md",
     formCategories: [],
     formOnly: "",
-    shows: [...ALL_SHOWS],
+    shows: [],
+    favorites: new Set(),
   };
+
+  function loadFavorites() {
+    try {
+      const saved = JSON.parse(localStorage.getItem("ssc_bw.favorites") || "[]");
+      if (Array.isArray(saved)) {
+        state.favorites = new Set(saved.filter((id) => typeof id === "string"));
+      }
+    } catch (_) {}
+  }
+
+  function saveFavorites() {
+    try {
+      localStorage.setItem("ssc_bw.favorites", JSON.stringify([...state.favorites]));
+    } catch (_) {}
+  }
+
+  function toggleFavorite(id) {
+    if (!id) return;
+    if (state.favorites.has(id)) state.favorites.delete(id);
+    else state.favorites.add(id);
+    saveFavorites();
+    cachedFilterKey = "";
+    render();
+  }
 
   function readUrl() {
     try {
@@ -981,9 +1015,7 @@
       else if (state.formCategories.length) p.set("form", state.formCategories.join(","));
       if (state.battery) p.set("battery", state.battery);
       if (state.gem) p.set("gem", state.gem);
-      if (state.shows.length !== ALL_SHOWS.length || !ALL_SHOWS.every((k) => state.shows.includes(k))) {
-        p.set("show", state.shows.join(","));
-      }
+      if (state.shows.length) p.set("show", state.shows.join(","));
       if (state.specialOnly) p.set("specialOnly", "1");
       if (state.sortKey !== "score") p.set("sort", state.sortKey);
       if (state.sortDir !== -1) p.set("dir", String(state.sortDir));
@@ -1442,6 +1474,49 @@
   let cachedSortedRows = [];
   let currentRowByKey = new Map();
 
+  function sortRows(rows, key, dir) {
+    const collator = getCollator();
+    return rows.slice().sort((a, b) => {
+      const favA = state.favorites.has(a.p.id) ? 1 : 0;
+      const favB = state.favorites.has(b.p.id) ? 1 : 0;
+      if (favA !== favB) return favB - favA;
+      let r = 0;
+      switch (key) {
+        case "name":
+          r = collator.compare(a.primaryName, b.primaryName);
+          break;
+        case "dex":
+          r = (a.p.dex || 99999) - (b.p.dex || 99999);
+          break;
+        case "speedStat":
+          r = a.work.speedValue - b.work.speedValue;
+          break;
+        case "multStat":
+          r = (a.work.multValue || 0) - (b.work.multValue || 0);
+          break;
+        case "speed":
+          r = a.work.speed - b.work.speed;
+          break;
+        case "mult":
+          r = (a.work.mult || 0) - (b.work.mult || 0);
+          break;
+        case "range":
+          r = (a.work.range || 0) - (b.work.range || 0);
+          break;
+        case "actionTime":
+          r = (a.work.actionTime ?? 999999) - (b.work.actionTime ?? 999999);
+          break;
+        case "score":
+        default:
+          r = a.work.score - b.work.score;
+          break;
+      }
+      if (r === 0) r = a.work.speed - b.work.speed;
+      if (r === 0) r = collator.compare(a.primaryName, b.primaryName);
+      return r * dir;
+    });
+  }
+
   function currentRows() {
     const station = getStation();
     const q = state.q.trim().toLowerCase();
@@ -1496,48 +1571,8 @@
 
     const fullSortKey = `${cachedFilterKey}|${state.sortKey}|${state.sortDir}`;
     if (fullSortKey !== cachedSortKey) {
-      const rows = cachedBaseRows.slice();
-      const collator = getCollator();
-      const dir = state.sortDir;
-      const key = state.sortKey;
-      rows.sort((a, b) => {
-        let r = 0;
-        switch (key) {
-          case "name":
-            r = collator.compare(a.primaryName, b.primaryName);
-            break;
-          case "dex":
-            r = (a.p.dex || 99999) - (b.p.dex || 99999);
-            break;
-          case "speedStat":
-            r = a.work.speedValue - b.work.speedValue;
-            break;
-          case "multStat":
-            r = (a.work.multValue || 0) - (b.work.multValue || 0);
-            break;
-          case "speed":
-            r = a.work.speed - b.work.speed;
-            break;
-          case "mult":
-            r = (a.work.mult || 0) - (b.work.mult || 0);
-            break;
-          case "range":
-            r = (a.work.range || 0) - (b.work.range || 0);
-            break;
-          case "actionTime":
-            r = (a.work.actionTime ?? 999999) - (b.work.actionTime ?? 999999);
-            break;
-          case "score":
-          default:
-            r = a.work.score - b.work.score;
-            break;
-        }
-        if (r === 0) r = a.work.speed - b.work.speed;
-        if (r === 0) r = collator.compare(a.primaryName, b.primaryName);
-        return r * dir;
-      });
+      cachedSortedRows = sortRows(cachedBaseRows, state.sortKey, state.sortDir);
       cachedSortKey = fullSortKey;
-      cachedSortedRows = rows;
     }
 
     return { station, rows: cachedSortedRows, showMult: cachedShowMult };
@@ -1711,7 +1746,7 @@
   let currentShowMult = false;
   let currentShowProd = false;
   let currentShowRange = false;
-  let currentColCount = 9;
+  let currentColCount = 10;
   let currentRowOffsets = new Int32Array(1);
   let renderedStart = -1;
   let renderedEnd = -1;
@@ -1818,6 +1853,7 @@
       : roleName(station, work.typeDef);
     const expanded = state.expanded === rowKey;
     const badgeHtml = badges(p);
+    const isFavorite = state.favorites.has(p.id);
     const speedStatKey = work.variant.speedStat;
     const speedStatLabel = esc(statName(speedStatKey));
     const speedBase = p.baseStats[speedStatKey];
@@ -1836,6 +1872,7 @@
     }
 
     let html = `<tr class="row-main${expanded ? " open" : ""}" data-key="${esc(rowKey)}" tabindex="0">
+      <td class="fav-cell"><button type="button" class="fav${isFavorite ? " on" : ""}" data-fav="${esc(p.id)}" aria-pressed="${isFavorite}" title="${esc(t(isFavorite ? "ssc_bw.fav.remove" : "ssc_bw.fav.add"))}">${isFavorite ? "★" : "☆"}</button></td>
       <td class="idx num">${idx + 1}</td>
       <td>
         <div class="zh"><span class="name">${esc(primaryName)}</span>${p.dex != null ? `<span class="dex">#${String(p.dex).padStart(4, "0")}</span>` : ""}${badgeHtml ? `<span class="badges">${badgeHtml}</span>` : ""}</div>
@@ -1935,7 +1972,7 @@
 
     const showProd = station.mode === "action" || showMult;
     const showRange = station.mode !== "recipe";
-    const colCount = 4 + 1 + (showMult ? 1 : 0) + 1 + (showProd ? 1 : 0) + (showRange ? 1 : 0) + 1;
+    const colCount = 5 + 1 + (showMult ? 1 : 0) + 1 + (showProd ? 1 : 0) + (showRange ? 1 : 0) + 1;
 
     currentStation = station;
     currentRowsList = rows;
@@ -2154,19 +2191,25 @@
       state.works = [];
       state.textSize = document.documentElement.dataset.textSize || "md";
       state.formCategories = [...DEFAULTS.formCategories];
-      state.shows = [...ALL_SHOWS];
+      state.shows = [];
       cachedScrollTop = 0;
       tableWrapEl.scrollTop = 0;
       render();
     });
 
     tbodyEl.addEventListener("click", (e) => {
+      const fav = e.target.closest("button.fav");
+      if (fav) {
+        toggleFavorite(fav.dataset.fav);
+        return;
+      }
       if (window.getSelection && String(window.getSelection()).length > 0) return;
       const row = e.target.closest("tr.row-main");
       if (!row) return;
       toggleRowExpand(row);
     });
     tbodyEl.addEventListener("keydown", (e) => {
+      if (e.target.closest("button.fav")) return;
       if (e.key !== "Enter" && e.key !== " ") return;
       const row = e.target.closest("tr.row-main");
       if (!row) return;
@@ -2211,6 +2254,7 @@
   buildFormChips();
   buildSpecialTypeChips();
   buildBonusOptions();
+  loadFavorites();
   readUrl();
   bind();
   applyStaticText();
