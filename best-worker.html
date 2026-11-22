@@ -306,7 +306,7 @@
     </div>
     <div class="title-line">
       <h1 data-i18n="ssc_bw.page.heading">Sunlit Cobblemon · Best Worker</h1>
-      <span class="site-version" title="Site version">v1.3.4</span>
+      <span class="site-version" title="Site version">v1.3.5</span>
     </div>
     <p data-i18n="ssc_bw.page.subtitle">List every Pokémon that can work at a workstation, sorted and filtered by the station's actual formulas.</p>
     <div class="meta" id="meta"></div>
@@ -547,7 +547,17 @@
       .map((category) => {
         const key = `ssc_bw.formCategory.${category}`;
         const onlyTitle = esc(t("ssc_bw.formCategory.onlyTitle"));
-        return `<span class="form-chip"><button type="button" class="chip form" data-form-cat="${esc(category)}" aria-pressed="false">${esc(t(key))}</button><button type="button" class="chip-solo" data-form-solo="${esc(category)}" title="${onlyTitle}" aria-label="${onlyTitle}">${esc(t("ssc_bw.formCategory.only"))}</button></span>`;
+        const supportTitleKey = category === "other-cosmetic"
+          ? "ssc_bw.formCategory.otherCosmeticTitle"
+          : category === "other-battle"
+            ? "ssc_bw.formCategory.otherBattleTitle"
+            : category === "other-special"
+              ? "ssc_bw.formCategory.otherSpecialTitle"
+              : UNSUPPORTED_FORM_CATEGORIES.has(category)
+                ? "ssc_bw.formCategory.unsupported"
+                : "";
+        const supportTitle = supportTitleKey ? ` title="${esc(t(supportTitleKey))}"` : "";
+        return `<span class="form-chip"><button type="button" class="chip form" data-form-cat="${esc(category)}" aria-pressed="false"${supportTitle}>${esc(t(key))}</button><button type="button" class="chip-solo" data-form-solo="${esc(category)}" title="${onlyTitle}" aria-label="${onlyTitle}">${esc(t("ssc_bw.formCategory.only"))}</button></span>`;
       })
       .join("");
   }
@@ -793,7 +803,14 @@
     return [...names];
   }
 
-  function formCategory(p) {
+  function sameFormStats(p, base) {
+    if (!base || !base.baseStats || !p.baseStats) return false;
+    const stats = ["hp", "attack", "defence", "special_attack", "special_defence", "speed"];
+    if ((p.types || []).join() !== (base.types || []).join()) return false;
+    return stats.every((key) => p.baseStats[key] === base.baseStats[key]);
+  }
+
+  function formCategory(p, base) {
     if (!p.isForm) return "";
     const name = String(p.formName || "").toLowerCase();
     if (/^alola/.test(name)) return "regional-alola";
@@ -801,10 +818,11 @@
     if (/^hisui/.test(name)) return "regional-hisui";
     if (/^paldea/.test(name)) return "regional-paldea";
     if (/^mega/.test(name)) return "mega";
-    if (/^gmax/.test(name)) return "gmax";
+    if (/gmax/.test(name)) return "gmax";
     if (/^primal/.test(name)) return "primal";
     if (/totem/.test(name)) return "totem";
-    return "other";
+    if (BATTLE_ONLY_FORM_IDS.has(p.id)) return "other-battle";
+    return sameFormStats(p, base) ? "other-cosmetic" : "other-special";
   }
 
   function natureName(id) {
@@ -837,8 +855,39 @@
     "gmax",
     "primal",
     "totem",
-    "other",
+    "other-cosmetic",
+    "other-battle",
+    "other-special",
   ];
+  const UNSUPPORTED_FORM_CATEGORIES = new Set(["mega", "gmax", "primal", "totem"]);
+  // 仅在对战中切换、战斗结束后恢复的形态
+  const BATTLE_ONLY_FORM_IDS = new Set([
+    "castform_rainy",
+    "castform_snowy",
+    "castform_sunny",
+    "cherrim_sunshine",
+    "darmanitan_zen",
+    "meloetta_pirouette",
+    "greninja_ash",
+    "aegislash_blade",
+    "zygarde_complete",
+    "wishiwashi_school",
+    "mimikyu_busted",
+    "cramorant_gulping",
+    "cramorant_gorging",
+    "eiscue_noice",
+    "morpeko_hangry",
+    "zacian_crowned",
+    "zamazenta_crowned",
+    "eternatus_eternamax",
+    "palafin_hero",
+    "ogerpon_teal_tera",
+    "ogerpon_cornerstone_tera",
+    "ogerpon_hearthflame_tera",
+    "ogerpon_wellspring_tera",
+    "terapagos_terastal",
+    "terapagos_stellar",
+  ]);
 
   const NATURES = [
     { id: "hardy", plus: null, minus: null },
@@ -957,6 +1006,8 @@
         const expanded = [];
         for (const category of requested) {
           if (category === "regional") expanded.push(...FORM_CHIP_CATEGORIES.filter((c) => c.startsWith("regional-")));
+          // 兼容旧链接：other 已拆成外观 / 对战 / 特殊三个分类
+          else if (category === "other") expanded.push("other-cosmetic", "other-battle", "other-special");
           else if (FORM_CHIP_CATEGORIES.includes(category)) expanded.push(category);
         }
         state.formCategories = FORM_CHIP_CATEGORIES.filter((c) => expanded.includes(c));
@@ -1243,8 +1294,9 @@
   }
 
   for (const s of D.stations) workOptions(s);
+  const pokemonById = new Map(D.pokemon.map((p) => [p.id, p]));
   for (const p of D.pokemon) {
-    p._formCat = formCategory(p);
+    p._formCat = formCategory(p, pokemonById.get(p.baseId));
     p._specialMask =
       (p.isLegendary ? 1 : 0) |
       (p.isMythical ? 2 : 0) |
