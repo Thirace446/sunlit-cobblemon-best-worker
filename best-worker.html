@@ -302,11 +302,11 @@
       <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle theme">
         <span id="themeIcon" aria-hidden="true">☾</span><span id="themeLabel">Dark</span>
       </button>
-      <a class="import-link" href="import.html">导入数据</a>
+      <a class="import-link" href="import.html" data-i18n="ssc_bw.import.link">导入数据</a>
     </div>
     <div class="title-line">
       <h1 data-i18n="ssc_bw.page.heading">Sunlit Cobblemon · Best Worker</h1>
-      <span class="site-version" title="Site version">v1.3.6</span>
+      <span class="site-version" title="Site version">v1.3.7</span>
     </div>
     <p data-i18n="ssc_bw.page.subtitle">List every Pokémon that can work at a workstation, sorted and filtered by the station's actual formulas.</p>
     <div class="meta" id="meta"></div>
@@ -414,7 +414,7 @@
   </footer>
 </div>
 
-<script src="data/lang.js?v=1.3.6"></script>
+<script src="data/lang.js?v=1.3.7"></script>
 <script src="assets/crystal-ball-gems.js"></script>
 <script>
 (function () {
@@ -428,8 +428,8 @@
     window.__SUNLIT_IMPORTED__ = imported.source || {};
   } else if (new URLSearchParams(location.search).get("bundled") === "1") {
     // Local development only: ?bundled=1 loads data/all-data.js if present.
-    document.write('<script src="data/pokemon-names.js?v=1.3.6"><\/script>');
-    document.write('<script src="data/all-data.js?v=1.3.6"><\/script>');
+    document.write('<script src="data/pokemon-names.js?v=1.3.7"><\/script>');
+    document.write('<script src="data/all-data.js?v=1.3.7"><\/script>');
   }
 })();
 </script>

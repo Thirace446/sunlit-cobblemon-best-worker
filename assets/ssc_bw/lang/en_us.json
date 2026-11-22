@@ -277,6 +277,7 @@
   "ssc_bw.note.action": " Action Time = Base Time / Speed Multiplier; Gardening Station radius = clamp(Level / 10, 1, 10), horizontal range = radius × 2 + 1, vertical radius = min(2, radius).",
   "ssc_bw.note.buff": " Crystal Ball / Energy Pylon range is a cube: horizontal and vertical are both radius × 2 + 1.",
   "ssc_bw.note.buffSpeed": "Crystal Ball / Energy Pylon score = the duration multiplier of the buff they trigger or refresh, not the buff strength; strength comes from the gem/battery.",
+  "ssc_bw.import.link": "Import data",
   "ssc_bw.import.title": "Import modpack data",
   "ssc_bw.import.subtitle": "Download the modpack and two mods from CurseForge, then drop the files here. Files are parsed only in your browser and are never uploaded.",
   "ssc_bw.import.notice.title": "This site does not host or distribute game files.",
