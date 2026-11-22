@@ -34,7 +34,7 @@ Pure static HTML with no backend or database. Player data is parsed and stored l
 3. The site currently supports only this modpack version:
 
 ```text
-1.1.4-SSV4.1.5A
+1.1.5-SSV4.2.1
 ```
 
 4. Download the modpack zip and the two mod jars listed by the page from CurseForge:
